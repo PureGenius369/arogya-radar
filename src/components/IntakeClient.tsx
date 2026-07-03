@@ -59,6 +59,7 @@ export default function IntakeClient({
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   const [parsing, setParsing] = useState(false);
+  const [sampleLoading, setSampleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [draft, setDraft] = useState<Draft>(EMPTY_DRAFT);
@@ -150,6 +151,40 @@ export default function IntakeClient({
       setError(e instanceof Error ? e.message : "Parsing failed.");
     } finally {
       setParsing(false);
+    }
+  }
+
+  // Bundled demo assets so a visitor without a mic, register, or Hindi can
+  // still experience the real Gemini parse in two clicks. Both samples
+  // describe PHC Biswanathpur, so the facility select follows along.
+  async function loadSample(kind: "audio" | "image") {
+    setSampleLoading(true);
+    setError(null);
+    try {
+      const url = kind === "audio" ? "/samples/voice-sample.wav" : "/samples/register-sample.jpg";
+      const res = await fetch(url);
+      if (!res.ok) throw new Error();
+      const blob = await res.blob();
+      if (facilities.some((f) => f.id === "PHC10")) setFacilityId("PHC10");
+      if (kind === "audio") {
+        const f = new File([blob], "voice-sample.wav", { type: "audio/wav" });
+        setAudioBlob(f);
+        setAudioUrl((old) => {
+          if (old) URL.revokeObjectURL(old);
+          return URL.createObjectURL(f);
+        });
+      } else {
+        const f = new File([blob], "register-sample.jpg", { type: "image/jpeg" });
+        setPhotoFile(f);
+        setPhotoUrl((old) => {
+          if (old) URL.revokeObjectURL(old);
+          return URL.createObjectURL(f);
+        });
+      }
+    } catch {
+      setError("Could not load the sample file.");
+    } finally {
+      setSampleLoading(false);
     }
   }
 
@@ -421,6 +456,12 @@ export default function IntakeClient({
             )}
             {audioUrl && !recording && <audio controls src={audioUrl} />}
           </div>
+          <p className="sub" style={{ marginTop: 10 }}>
+            No mic handy?{" "}
+            <button className="btn sm secondary" onClick={() => loadSample("audio")} disabled={sampleLoading}>
+              {sampleLoading ? "Loading…" : "▶ Load a sample voice note"}
+            </button>
+          </p>
           <p className="sub">…or upload a voice note file:</p>
           <input
             type="file"
@@ -450,6 +491,12 @@ export default function IntakeClient({
             Photograph the daily register page — the AI reads handwriting, Odia or English headers,
             and drafts the report for confirmation. (Need a sheet?{" "}
             <Link href="/register-template">Print the register template</Link>.)
+          </p>
+          <p className="sub">
+            No register handy?{" "}
+            <button className="btn sm secondary" onClick={() => loadSample("image")} disabled={sampleLoading}>
+              {sampleLoading ? "Loading…" : "Load a sample register photo"}
+            </button>
           </p>
           <input
             type="file"

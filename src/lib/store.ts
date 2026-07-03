@@ -26,6 +26,11 @@ export function getStore(): Store {
   return g.__arogyaStore;
 }
 
+/** Reloads the pristine generated dataset, discarding all session intake. */
+export function resetStore(): void {
+  g.__arogyaStore = load();
+}
+
 export function getFacility(id: string): Facility | undefined {
   return getStore().district.facilities.find((f) => f.id === id);
 }

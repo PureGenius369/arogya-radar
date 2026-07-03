@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ResetButton from "@/components/ResetButton";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
@@ -31,10 +32,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </header>
         <main className="shell">{children}</main>
         <footer className="site-footer">
-          <div className="shell">
-            Prototype for <strong>Build with AI: Code for Communities</strong> — Track 3 Smart Health.
-            Facility activity is synthetic, calibrated on HMIS/IDSP public data; see README for data
-            provenance.
+          <div className="shell footer-inner">
+            <span>
+              Prototype for <strong>Build with AI: Code for Communities</strong> — Track 3 Smart
+              Health. Facility activity is synthetic, calibrated on HMIS/IDSP public data; see
+              README for data provenance.
+            </span>
+            <ResetButton className="btn sm secondary no-print" />
           </div>
         </footer>
       </body>

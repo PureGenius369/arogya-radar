@@ -4,6 +4,7 @@ import { buildDashboard } from "@/lib/analytics";
 import DistrictMap from "@/components/DistrictMap";
 import BriefPanel from "@/components/BriefPanel";
 import Sparkline from "@/components/Sparkline";
+import DemoTour from "@/components/DemoTour";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export default function CommandCentre() {
 
   return (
     <div>
+      <DemoTour />
       <div className="page-head">
         <h1>District command centre</h1>
         <span className="asof">
