@@ -15,15 +15,19 @@ import { GoogleGenAI } from "@google/genai";
 import type { Drug, Facility, IntakeReport, Syndrome } from "./types";
 import { SYNDROMES, SYNDROME_LABELS } from "./types";
 
-const apiKey = process.env.GEMINI_API_KEY;
-export const geminiEnabled = Boolean(apiKey && apiKey.trim().length > 10);
+// Trim so a stray space/newline from a shell echo or editor can't corrupt
+// the key or leave it looking "set" while failing at the API.
+const apiKey = process.env.GEMINI_API_KEY?.trim();
+export const geminiEnabled = Boolean(apiKey && apiKey.length > 10 && apiKey !== "PASTE_YOUR_KEY_HERE");
 
-// Intake is the hard perception job (Odia/Hindi voice, messy handwriting) -
-// default to Pro for accuracy. The brief is easy summarization - default to
-// Flash for speed and gentler rate limits. Either can be overridden in .env;
+// Both jobs default to Flash: it handles multimodal intake (Odia/Hindi voice,
+// register photos) well and has generous free-tier quota. Pro is marginally
+// sharper on the worst handwriting but the free Gemini tier grants it almost
+// no quota (429s immediately) - it needs billing enabled. If you enable
+// billing, set GEMINI_INTAKE_MODEL=gemini-2.5-pro to upgrade intake accuracy.
 // GEMINI_MODEL, if set, overrides both.
 const OVERRIDE = process.env.GEMINI_MODEL;
-const INTAKE_MODEL = OVERRIDE || process.env.GEMINI_INTAKE_MODEL || "gemini-2.5-pro";
+const INTAKE_MODEL = OVERRIDE || process.env.GEMINI_INTAKE_MODEL || "gemini-2.5-flash";
 const BRIEF_MODEL = OVERRIDE || process.env.GEMINI_BRIEF_MODEL || "gemini-2.5-flash";
 
 let client: GoogleGenAI | null = null;
