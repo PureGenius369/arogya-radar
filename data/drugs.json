@@ -1,0 +1,27 @@
+{
+  "note": "Subset of NLEM 2022 essential medicines stocked at Odisha PHC/CHC level. Prices approximate Jan Aushadhi / state procurement rates in INR per unit. perCase maps expected units dispensed per presenting case of each syndrome; dailyBase is chronic/ambient daily demand at scale 1 (~25k catchment PHC).",
+  "drugs": [
+    { "id": "paracetamol_500", "name": "Paracetamol 500 mg", "unit": "tab", "price": 0.9, "category": "Antipyretic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "fever": 8, "ari": 4, "fever_rash": 6 }, "dailyBase": 15, "outbreak": ["fever", "fever_rash"] },
+    { "id": "ors_sachet", "name": "ORS sachet (WHO)", "unit": "sachet", "price": 5.5, "category": "Rehydration", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "diarrhoea": 3, "fever_rash": 1 }, "dailyBase": 3, "outbreak": ["diarrhoea", "fever_rash"] },
+    { "id": "zinc_20", "name": "Zinc sulphate 20 mg", "unit": "tab", "price": 1.5, "category": "Rehydration", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "diarrhoea": 6 }, "dailyBase": 2, "outbreak": ["diarrhoea"] },
+    { "id": "amoxicillin_500", "name": "Amoxicillin 500 mg", "unit": "cap", "price": 3.5, "category": "Antibiotic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "ari": 6 }, "dailyBase": 5, "outbreak": [] },
+    { "id": "azithromycin_500", "name": "Azithromycin 500 mg", "unit": "tab", "price": 9.0, "category": "Antibiotic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "ari": 1.5 }, "dailyBase": 2, "outbreak": [] },
+    { "id": "act_kit", "name": "Artemether-Lumefantrine course (ACT)", "unit": "course", "price": 55.0, "category": "Antimalarial", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "fever": 0.25 }, "dailyBase": 0.5, "outbreak": ["fever"] },
+    { "id": "rdt_malaria", "name": "Malaria RDT kit", "unit": "test", "price": 25.0, "category": "Diagnostic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "fever": 0.6 }, "dailyBase": 1, "outbreak": ["fever"] },
+    { "id": "ns1_dengue", "name": "Dengue NS1 RDT kit", "unit": "test", "price": 180.0, "category": "Diagnostic", "tiers": ["CHC", "SDH", "DHH"], "perCase": { "fever_rash": 0.8, "fever": 0.05 }, "dailyBase": 0.2, "outbreak": ["fever_rash"] },
+    { "id": "iv_ns_500", "name": "IV Normal Saline 500 ml", "unit": "bottle", "price": 28.0, "category": "IV fluid", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "diarrhoea": 0.5, "fever_rash": 0.6, "fever": 0.05 }, "dailyBase": 1.5, "outbreak": ["diarrhoea", "fever_rash"] },
+    { "id": "ringer_lactate", "name": "IV Ringer Lactate 500 ml", "unit": "bottle", "price": 30.0, "category": "IV fluid", "tiers": ["CHC", "SDH", "DHH"], "perCase": { "fever_rash": 0.4 }, "dailyBase": 0.8, "outbreak": ["fever_rash"] },
+    { "id": "doxycycline_100", "name": "Doxycycline 100 mg", "unit": "cap", "price": 2.0, "category": "Antibiotic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "fever": 0.8 }, "dailyBase": 2, "outbreak": [] },
+    { "id": "ifa_tab", "name": "Iron folic acid (IFA)", "unit": "tab", "price": 0.5, "category": "Maternal", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "maternal": 30 }, "dailyBase": 20, "outbreak": [] },
+    { "id": "metformin_500", "name": "Metformin 500 mg", "unit": "tab", "price": 1.0, "category": "Chronic (NCD)", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": {}, "dailyBase": 35, "outbreak": [] },
+    { "id": "amlodipine_5", "name": "Amlodipine 5 mg", "unit": "tab", "price": 0.8, "category": "Chronic (NCD)", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": {}, "dailyBase": 28, "outbreak": [] },
+    { "id": "salbutamol_inh", "name": "Salbutamol inhaler", "unit": "inhaler", "price": 120.0, "category": "Respiratory", "tiers": ["CHC", "SDH", "DHH"], "perCase": { "ari": 0.03 }, "dailyBase": 0.15, "outbreak": [] },
+    { "id": "cetirizine_10", "name": "Cetirizine 10 mg", "unit": "tab", "price": 0.4, "category": "Antiallergic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "ari": 3 }, "dailyBase": 6, "outbreak": [] },
+    { "id": "ondansetron_4", "name": "Ondansetron 4 mg", "unit": "tab", "price": 2.0, "category": "Antiemetic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "diarrhoea": 2 }, "dailyBase": 2, "outbreak": ["diarrhoea"] },
+    { "id": "cotrimoxazole_480", "name": "Cotrimoxazole 480 mg", "unit": "tab", "price": 1.5, "category": "Antibiotic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "ari": 2 }, "dailyBase": 3, "outbreak": [] },
+    { "id": "oxytocin_inj", "name": "Oxytocin 10 IU injection", "unit": "amp", "price": 15.0, "category": "Maternal", "tiers": ["CHC", "SDH", "DHH"], "perCase": { "maternal": 0.35 }, "dailyBase": 0.3, "outbreak": [] },
+    { "id": "mgso4_inj", "name": "Magnesium sulphate 50% injection", "unit": "amp", "price": 18.0, "category": "Maternal", "tiers": ["CHC", "SDH", "DHH"], "perCase": { "maternal": 0.04 }, "dailyBase": 0.1, "outbreak": [] },
+    { "id": "td_vaccine", "name": "Td vaccine dose", "unit": "dose", "price": 10.0, "category": "Vaccine", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "maternal": 1, "injury": 0.5, "snakebite": 0.2 }, "dailyBase": 2, "outbreak": [] },
+    { "id": "asv_vial", "name": "Anti-snake venom (ASV)", "unit": "vial", "price": 580.0, "category": "Emergency", "tiers": ["CHC", "SDH", "DHH"], "perCase": { "snakebite": 4 }, "dailyBase": 0.05, "outbreak": ["snakebite"] }
+  ]
+}
