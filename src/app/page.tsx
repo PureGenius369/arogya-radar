@@ -64,16 +64,80 @@ export default function CommandCentre() {
       </div>
 
       <div className="grid-2">
-        <div className="card">
-          <h2>District map</h2>
-          <p className="sub">
-            36 facilities · dashed circles mark blocks with an active outbreak signal · click a pin
-            for details
-          </p>
-          <DistrictMap center={dash.center} facilities={dash.facilities} zones={zones} />
+        <div className="dash-col">
+          <div className="card">
+            <h2>District map</h2>
+            <p className="sub">
+              36 facilities · dashed circles mark blocks with an active outbreak signal · click a
+              pin for details
+            </p>
+            <DistrictMap center={dash.center} facilities={dash.facilities} zones={zones} />
+          </div>
+
+          <div className="card">
+            <h2>Stock emergencies</h2>
+            <p className="sub">days of stock = on-hand ÷ 14-day burn rate · target 30 days</p>
+            <table className="data">
+              <thead>
+                <tr>
+                  <th>Facility</th>
+                  <th>Medicine</th>
+                  <th style={{ textAlign: "right" }}>On hand</th>
+                  <th style={{ textAlign: "right" }}>Days left</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dash.shortages.map((s, i) => (
+                  <tr key={i}>
+                    <td>{s.facilityName}</td>
+                    <td>{s.drugName}</td>
+                    <td className="num">
+                      {s.stock} {s.unit}
+                    </td>
+                    <td className="num">{s.daysOfStock}</td>
+                    <td>
+                      <span className={`badge ${s.status}`}>{s.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="card">
+            <h2>Expiring unused — {inr(dash.expiryTotal)} at risk</h2>
+            <p className="sub">
+              batches that will not be consumed before expiry at current burn rate (FEFO)
+            </p>
+            <table className="data">
+              <thead>
+                <tr>
+                  <th>Facility</th>
+                  <th>Medicine</th>
+                  <th style={{ textAlign: "right" }}>Will expire</th>
+                  <th>Expiry</th>
+                  <th style={{ textAlign: "right" }}>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dash.expiry.map((e, i) => (
+                  <tr key={i}>
+                    <td>{e.facilityName}</td>
+                    <td>{e.drugName}</td>
+                    <td className="num">
+                      {e.expectedWasteUnits} {e.unit}
+                    </td>
+                    <td>{e.expiry}</td>
+                    <td className="num money">{inr(e.wasteValue)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <div className="card">
+        <div className="card radar-card">
           <h2>Outbreak radar</h2>
           <p className="sub">
             EARS-C2 aberration detection over daily syndrome counts, block-level corroboration —
@@ -100,70 +164,6 @@ export default function CommandCentre() {
               ))}
             </div>
           ))}
-        </div>
-      </div>
-
-      <div className="grid-2col">
-        <div className="card">
-          <h2>Stock emergencies</h2>
-          <p className="sub">days of stock = on-hand ÷ 14-day burn rate · target 30 days</p>
-          <table className="data">
-            <thead>
-              <tr>
-                <th>Facility</th>
-                <th>Medicine</th>
-                <th style={{ textAlign: "right" }}>On hand</th>
-                <th style={{ textAlign: "right" }}>Days left</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dash.shortages.map((s, i) => (
-                <tr key={i}>
-                  <td>{s.facilityName}</td>
-                  <td>{s.drugName}</td>
-                  <td className="num">
-                    {s.stock} {s.unit}
-                  </td>
-                  <td className="num">{s.daysOfStock}</td>
-                  <td>
-                    <span className={`badge ${s.status}`}>{s.status}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="card">
-          <h2>Expiring unused — {inr(dash.expiryTotal)} at risk</h2>
-          <p className="sub">
-            batches that will not be consumed before expiry at current burn rate (FEFO)
-          </p>
-          <table className="data">
-            <thead>
-              <tr>
-                <th>Facility</th>
-                <th>Medicine</th>
-                <th style={{ textAlign: "right" }}>Will expire</th>
-                <th>Expiry</th>
-                <th style={{ textAlign: "right" }}>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dash.expiry.map((e, i) => (
-                <tr key={i}>
-                  <td>{e.facilityName}</td>
-                  <td>{e.drugName}</td>
-                  <td className="num">
-                    {e.expectedWasteUnits} {e.unit}
-                  </td>
-                  <td>{e.expiry}</td>
-                  <td className="num money">{inr(e.wasteValue)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
       </div>
 
