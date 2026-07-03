@@ -17,7 +17,14 @@ import { SYNDROMES, SYNDROME_LABELS } from "./types";
 
 const apiKey = process.env.GEMINI_API_KEY;
 export const geminiEnabled = Boolean(apiKey && apiKey.trim().length > 10);
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+
+// Intake is the hard perception job (Odia/Hindi voice, messy handwriting) -
+// default to Pro for accuracy. The brief is easy summarization - default to
+// Flash for speed and gentler rate limits. Either can be overridden in .env;
+// GEMINI_MODEL, if set, overrides both.
+const OVERRIDE = process.env.GEMINI_MODEL;
+const INTAKE_MODEL = OVERRIDE || process.env.GEMINI_INTAKE_MODEL || "gemini-2.5-pro";
+const BRIEF_MODEL = OVERRIDE || process.env.GEMINI_BRIEF_MODEL || "gemini-2.5-flash";
 
 let client: GoogleGenAI | null = null;
 function ai(): GoogleGenAI {
@@ -136,7 +143,7 @@ export async function parseIntake(opts: {
   if (!geminiEnabled) return mockIntake(opts.facility, opts.today);
 
   const res = await ai().models.generateContent({
-    model: MODEL,
+    model: INTAKE_MODEL,
     contents: [
       {
         role: "user",
@@ -217,7 +224,7 @@ Keep it to roughly one page. Use ₹ with Indian digit grouping. Do not invent a
 ${JSON.stringify(payload, null, 1)}`;
 
   const res = await ai().models.generateContent({
-    model: MODEL,
+    model: BRIEF_MODEL,
     contents: [{ role: "user", parts: [{ text: prompt }] }],
     config: { temperature: 0.3 },
   });
