@@ -219,9 +219,10 @@ export async function generateBrief(payload: object, language: string): Promise<
 
 Write in ${lang}. Structure (use these numbered sections with short headings):
 1. Outbreak radar — what is flaring, where, since when, and how confident we are. Lead with the single most important thing.
-2. Stock emergencies — which centres run out of which medicines in the next 7 days.
-3. Money being lost — medicines that will expire unused, with rupee values.
-4. Actions for this week — a numbered, concrete to-do list (transfers to approve, teams to send, calls to make). Reference specific facilities and quantities.
+2. Reporting blind spots — centres that have gone silent, especially any inside a block that is flagging an outbreak (a blind spot in an outbreak block is urgent). Name the last person who reported so the officer knows who to call.
+3. Stock emergencies — which centres run out of which medicines in the next 7 days.
+4. Money being lost — medicines that will expire unused, with rupee values.
+5. Actions for this week — a numbered, concrete to-do list (transfers to approve, teams to send, calls to make, silent centres to chase). Reference specific facilities, people and quantities.
 
 Keep it to roughly one page. Use ₹ with Indian digit grouping. Do not invent any numbers not present in the data. Today's data:
 
@@ -240,6 +241,7 @@ function mockBrief(payload: object): string {
   const p = payload as {
     endDate?: string;
     alerts?: { severity: string; block: string; label: string; message: string }[];
+    reportingBlindSpots?: { facilityName: string; block: string; daysSilent: number; blindSpotInOutbreakBlock: boolean; lastReportedBy: string | null }[];
     shortages?: { facilityName: string; drugName: string; daysOfStock: number }[];
     expiryTotal?: number;
     transfers?: { drugName: string; qty: number; unit: string; fromName: string; toName: string; valueSaved: number }[];
@@ -253,17 +255,28 @@ function mockBrief(payload: object): string {
     lines.push(`   [${a.severity.toUpperCase()}] ${a.block}: ${a.label}. ${a.message}`);
   }
   lines.push("");
-  lines.push("2. STOCK EMERGENCIES (next 7 days)");
+  lines.push("2. REPORTING BLIND SPOTS");
+  const bs = p.reportingBlindSpots ?? [];
+  if (bs.length === 0) lines.push("   All centres reporting on time.");
+  for (const c of bs) {
+    lines.push(
+      `   ${c.facilityName} (${c.block}): silent ${c.daysSilent} days` +
+        (c.blindSpotInOutbreakBlock ? " — BLIND SPOT inside an outbreak block" : "") +
+        (c.lastReportedBy ? `. Call ${c.lastReportedBy}.` : ".")
+    );
+  }
+  lines.push("");
+  lines.push("3. STOCK EMERGENCIES (next 7 days)");
   for (const s of (p.shortages ?? []).slice(0, 6)) {
     lines.push(`   ${s.facilityName}: ${s.drugName} — ${s.daysOfStock} days of stock left.`);
   }
   lines.push("");
-  lines.push("3. MONEY BEING LOST");
+  lines.push("4. MONEY BEING LOST");
   lines.push(
     `   Medicines worth ₹${(p.expiryTotal ?? 0).toLocaleString("en-IN")} will expire unused within 120 days unless redistributed.`
   );
   lines.push("");
-  lines.push("4. ACTIONS FOR THIS WEEK");
+  lines.push("5. ACTIONS FOR THIS WEEK");
   (p.transfers ?? []).slice(0, 5).forEach((t, i) => {
     lines.push(
       `   ${i + 1}. Approve transfer: ${t.qty} ${t.unit} ${t.drugName} from ${t.fromName} to ${t.toName}` +

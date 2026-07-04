@@ -65,8 +65,16 @@ export interface DrugStock {
   consumption30: number[]; // daily demand, oldest first
 }
 
+export interface Reporter {
+  name: string;
+  role: string;
+  staffId: string;
+  photo?: string | null; // data URL captured on the spot (ephemeral without a DB)
+}
+
 export interface FacilityData {
-  reportedToday: boolean;
+  lastReportDaysAgo: number; // 0 = reported today
+  lastReporter?: Reporter | null;
   series: Record<string, number[]>; // footfall, bedOccupied, other, each syndrome
   stock: Record<string, DrugStock>;
 }
@@ -170,4 +178,20 @@ export interface IntakeReport {
   stock: IntakeStockLine[];
   notes?: string | null;
   uncertain?: string[];
+  reporter?: Reporter | null;
+}
+
+// ---- Reporting compliance -------------------------------------------------
+
+export type ComplianceSeverity = "ok" | "overdue" | "blindspot";
+
+export interface ComplianceRow {
+  facilityId: string;
+  facilityName: string;
+  block: string;
+  type: FacilityType;
+  daysSinceReport: number;
+  severity: ComplianceSeverity;
+  inAlertBlock: boolean;
+  lastReporter?: Reporter | null;
 }

@@ -79,20 +79,30 @@ export default function DistrictMap({
 
       for (const f of facilities) {
         const occ = f.beds > 0 ? Math.round((f.bedOccupied / f.beds) * 100) : 0;
+        const silent = f.daysSinceReport >= 2;
+        // Silent centres render as a hollow grey ring so blind spots are
+        // visible on the map, not just in the table.
         const marker = L.circleMarker([f.lat, f.lng], {
           radius: pinRadius(f.type),
-          color: "#ffffff",
-          weight: 1.5,
-          fillColor: pinColor(f),
-          fillOpacity: 0.95,
+          color: silent ? "#64748b" : "#ffffff",
+          weight: silent ? 2 : 1.5,
+          fillColor: silent ? "#ffffff" : pinColor(f),
+          fillOpacity: silent ? 0.35 : 0.95,
+          dashArray: silent ? "3 2" : undefined,
         }).addTo(map);
+        const reporter = f.lastReporter
+          ? `${f.lastReporter.name}, ${f.lastReporter.role} (${f.lastReporter.staffId})`
+          : "—";
+        const reportLine = f.reportedToday
+          ? `Reported today · ${reporter}`
+          : `<span style="color:${silent ? "#dc2626" : "#b45309"};font-weight:600">No report for ${f.daysSinceReport} day${f.daysSinceReport === 1 ? "" : "s"}</span><br/>Last: ${reporter}`;
         marker.bindPopup(
           `<strong>${f.name}</strong><br/>${f.type} · ${f.block} block<br/>` +
             `OPD today: ${f.footfallToday}<br/>` +
             `Beds: ${f.bedOccupied}/${f.beds} (${occ}%)<br/>` +
             `Critical medicine lines: ${f.criticalDrugs}<br/>` +
             (f.alertLevel ? `<span style="color:#dc2626;font-weight:600">Outbreak ${f.alertLevel}</span><br/>` : "") +
-            (f.reportedToday ? "Reported today" : "<em>No report today</em>")
+            reportLine
         );
       }
 
@@ -120,6 +130,10 @@ export default function DistrictMap({
         <span><span className="dot" style={{ background: "#d97706" }} /> outbreak warning</span>
         <span><span className="dot" style={{ background: "#6d28d9" }} /> stock critical</span>
         <span><span className="dot" style={{ background: "#0e7490" }} /> normal</span>
+        <span>
+          <span className="dot" style={{ background: "#fff", border: "2px dashed #64748b" }} /> silent
+          (no report)
+        </span>
         <span>circle size = facility level (PHC → DHH)</span>
       </div>
     </div>

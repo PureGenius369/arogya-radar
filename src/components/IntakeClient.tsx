@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { SYNDROMES, SYNDROME_LABELS, type Syndrome } from "@/lib/types";
+import ReporterBlock, { type ReporterValue } from "./ReporterBlock";
 
 interface FacilityOpt {
   id: string;
@@ -69,6 +70,9 @@ export default function IntakeClient({
 
   const [submitting, setSubmitting] = useState(false);
   const [applied, setApplied] = useState<string[]>([]);
+
+  const [reporter, setReporter] = useState<ReporterValue>({ name: "", staffId: "", role: "", photo: null });
+  const reporterComplete = reporter.name.trim() !== "" && reporter.staffId.trim() !== "" && reporter.role !== "";
 
   const facility = facilities.find((f) => f.id === facilityId);
   const facilityDrugs = drugs.filter((d) => !facility || d.tiers.includes(facility.type));
@@ -199,6 +203,10 @@ export default function IntakeClient({
   // ---- submit ----
   async function submit() {
     if (!facility) return;
+    if (!reporterComplete) {
+      setError("Please fill the reporter's name, staff ID and role before sending.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -215,6 +223,12 @@ export default function IntakeClient({
           .map((l) => ({ drugId: l.drugId, onHand: l.onHand, expiry: l.expiry || null })),
         notes: draft.notes || null,
         uncertain,
+        reporter: {
+          name: reporter.name.trim(),
+          staffId: reporter.staffId.trim(),
+          role: reporter.role,
+          photo: reporter.photo,
+        },
       };
       const res = await fetch("/api/report", {
         method: "POST",
@@ -302,6 +316,25 @@ export default function IntakeClient({
         )}
         {uncertain.length > 0 && (
           <div className="notice warn">Please verify: {uncertain.join(", ")}</div>
+        )}
+        {reporterComplete ? (
+          <div className="notice info" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {reporter.photo && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={reporter.photo}
+                alt="Reporter"
+                style={{ width: 34, height: 34, borderRadius: "50%", objectFit: "cover" }}
+              />
+            )}
+            <span>
+              Recorded by <strong>{reporter.name}</strong> · {reporter.role} ({reporter.staffId})
+            </span>
+          </div>
+        ) : (
+          <div className="notice warn">
+            Reporter details are required — go Back and fill name, staff ID and role.
+          </div>
         )}
 
         <div className="grid-2col">
@@ -419,6 +452,8 @@ export default function IntakeClient({
           </option>
         ))}
       </select>
+
+      <ReporterBlock value={reporter} onChange={setReporter} />
 
       <div className="tabs" style={{ marginTop: 16 }}>
         <button className={tab === "voice" ? "active" : ""} onClick={() => setTab("voice")}>

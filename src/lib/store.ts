@@ -1,13 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { DistrictFile, Drug, Facility, IntakeReport, RecordsFile, Syndrome } from "./types";
+import type { DistrictFile, Drug, Facility, IntakeReport, Reporter, RecordsFile, Syndrome } from "./types";
 import { SYNDROMES } from "./types";
 
 export interface Store {
   district: DistrictFile;
   drugs: Drug[];
   records: RecordsFile;
-  intakeLog: { at: string; facilityId: string; summary: string }[];
+  intakeLog: { at: string; facilityId: string; summary: string; reporter?: Reporter | null }[];
 }
 
 // Survives Next.js dev-server HMR reloads and is shared across route handlers.
@@ -83,11 +83,13 @@ export function applyReport(report: IntakeReport): { applied: string[] } {
     applied.push(line.drugId);
   }
 
-  fac.reportedToday = true;
+  fac.lastReportDaysAgo = 0;
+  if (report.reporter && report.reporter.name) fac.lastReporter = report.reporter;
   store.intakeLog.unshift({
     at: new Date().toISOString(),
     facilityId: report.facilityId,
     summary: applied.join(", "),
+    reporter: report.reporter ?? null,
   });
   return { applied };
 }

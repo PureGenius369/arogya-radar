@@ -57,6 +57,10 @@ export default function CommandCentre() {
           <div className="v">{dash.kpis.reportingRate}%</div>
           <div className="l">facilities reported today</div>
         </div>
+        <div className={`kpi ${dash.kpis.blindSpotCount > 0 ? "danger" : "ok"}`}>
+          <div className="v">{dash.kpis.blindSpotCount}</div>
+          <div className="l">reporting blind spots in alert blocks</div>
+        </div>
         <div className={`kpi ${dash.kpis.bedsUnderPressure > 0 ? "warn" : "ok"}`}>
           <div className="v">{dash.kpis.bedsUnderPressure}</div>
           <div className="l">facilities ≥90% bed occupancy</div>
@@ -168,6 +172,66 @@ export default function CommandCentre() {
       </div>
 
       <div className="card">
+        <h2>
+          Reporting compliance —{" "}
+          {dash.kpis.silentCount === 0 ? (
+            "every centre reported"
+          ) : (
+            <>
+              {dash.kpis.silentCount} centre{dash.kpis.silentCount > 1 ? "s" : ""} silent,{" "}
+              {dash.kpis.blindSpotCount} blind spot{dash.kpis.blindSpotCount === 1 ? "" : "s"}
+            </>
+          )}
+        </h2>
+        <p className="sub">
+          a centre that stops reporting is a blind spot — one inside a block that is flagging an
+          outbreak is the most dangerous of all. Every report is attributed, so the district knows
+          exactly who to call.
+        </p>
+        {dash.compliance.filter((c) => c.severity !== "ok").length === 0 ? (
+          <p>All 36 facilities are reporting on time.</p>
+        ) : (
+          <table className="data">
+            <thead>
+              <tr>
+                <th>Facility</th>
+                <th>Block</th>
+                <th style={{ textAlign: "right" }}>Silent</th>
+                <th>Status</th>
+                <th>Last reported by — call to follow up</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dash.compliance
+                .filter((c) => c.severity !== "ok")
+                .map((c) => (
+                  <tr key={c.facilityId}>
+                    <td>{c.facilityName}</td>
+                    <td>{c.block}</td>
+                    <td className="num">{c.daysSinceReport} days</td>
+                    <td>
+                      <span className={`badge ${c.severity}`}>
+                        {c.severity === "blindspot" ? "blind spot" : "overdue"}
+                      </span>
+                    </td>
+                    <td>
+                      {c.lastReporter ? (
+                        <>
+                          {c.lastReporter.name} · {c.lastReporter.role}{" "}
+                          <span style={{ color: "var(--ink-3)" }}>({c.lastReporter.staffId})</span>
+                        </>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <div className="card">
         <h2>Recommended transfers</h2>
         <p className="sub">
           greedy matching: worst shortages first, nearest surplus holder — expiring stock offered
@@ -214,11 +278,20 @@ export default function CommandCentre() {
         <div className="card">
           <h2>Recent facility reports (this session)</h2>
           <table className="data">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Facility</th>
+                <th>Reported by</th>
+                <th>Updated</th>
+              </tr>
+            </thead>
             <tbody>
               {dash.intakeLog.map((l, i) => (
                 <tr key={i}>
                   <td>{new Date(l.at).toLocaleTimeString()}</td>
                   <td>{l.facilityId}</td>
+                  <td>{l.reporter?.name ? `${l.reporter.name} (${l.reporter.role})` : "—"}</td>
                   <td>{l.summary}</td>
                 </tr>
               ))}

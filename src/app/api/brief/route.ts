@@ -34,6 +34,16 @@ export async function POST(req: NextRequest) {
         daysOfStock: s.daysOfStock,
         status: s.status,
       })),
+      reportingBlindSpots: dash.compliance
+        .filter((c) => c.severity !== "ok")
+        .slice(0, 6)
+        .map((c) => ({
+          facilityName: c.facilityName,
+          block: c.block,
+          daysSilent: c.daysSinceReport,
+          blindSpotInOutbreakBlock: c.severity === "blindspot",
+          lastReportedBy: c.lastReporter ? `${c.lastReporter.name}, ${c.lastReporter.role}` : null,
+        })),
       expiryTotal: dash.expiryTotal,
       expiryTop: dash.expiry.slice(0, 6).map((e) => ({
         facilityName: e.facilityName,

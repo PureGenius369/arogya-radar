@@ -1,9 +1,10 @@
 // Assembles the full district dashboard payload from the store.
 
-import type { AlertSeverity, BlockAlert, ExpiryRow, StockRow, TransferRec } from "./types";
+import type { AlertSeverity, BlockAlert, ComplianceRow, ExpiryRow, Reporter, StockRow, TransferRec } from "./types";
 import type { Store } from "./store";
 import { detectAlerts, facilityAlertLevels } from "./radar";
 import { expiryRows, stockRows, transferRecs } from "./stock";
+import { complianceRows, complianceSummary } from "./compliance";
 
 export interface FacilityStatus {
   id: string;
@@ -15,6 +16,8 @@ export interface FacilityStatus {
   beds: number;
   bedOccupied: number;
   reportedToday: boolean;
+  daysSinceReport: number;
+  lastReporter?: Reporter | null;
   alertLevel: AlertSeverity | null;
   worstStock: string; // status of the worst drug line
   criticalDrugs: number;
@@ -32,6 +35,8 @@ export interface Dashboard {
     criticalLines: number; // facility-drug pairs at stockout/critical
     expiryWasteValue: number; // rupees at risk in next 120 days
     bedsUnderPressure: number; // facilities at >=90% occupancy
+    silentCount: number; // facilities overdue on reporting
+    blindSpotCount: number; // overdue facilities inside an alert block
   };
   alerts: BlockAlert[];
   facilities: FacilityStatus[];
@@ -39,7 +44,8 @@ export interface Dashboard {
   expiry: ExpiryRow[];
   expiryTotal: number;
   transfers: TransferRec[];
-  intakeLog: { at: string; facilityId: string; summary: string }[];
+  compliance: ComplianceRow[];
+  intakeLog: { at: string; facilityId: string; summary: string; reporter?: Reporter | null }[];
 }
 
 const STOCK_RANK = { stockout: 0, critical: 1, low: 2, ok: 3, surplus: 4 } as const;
@@ -53,6 +59,8 @@ export function buildDashboard(store: Store): Dashboard {
   const rows = stockRows(store);
   const expiry = expiryRows(store, 120);
   const transfers = transferRecs(store, alerts);
+  const compliance = complianceRows(store, alerts);
+  const compSummary = complianceSummary(compliance);
 
   const facilities: FacilityStatus[] = district.facilities.map((f) => {
     const fd = records.facilities[f.id];
@@ -70,7 +78,9 @@ export function buildDashboard(store: Store): Dashboard {
       lng: f.lng,
       beds: f.beds,
       bedOccupied: fd?.series.bedOccupied[t] ?? 0,
-      reportedToday: fd?.reportedToday ?? false,
+      reportedToday: (fd?.lastReportDaysAgo ?? 0) === 0,
+      daysSinceReport: fd?.lastReportDaysAgo ?? 0,
+      lastReporter: fd?.lastReporter ?? null,
       alertLevel: levels[f.id] ?? null,
       worstStock: worst,
       criticalDrugs: facRows.filter((r) => r.status === "stockout" || r.status === "critical").length,
@@ -78,7 +88,6 @@ export function buildDashboard(store: Store): Dashboard {
     };
   });
 
-  const reported = facilities.filter((f) => f.reportedToday).length;
   const shortages = rows
     .filter((r) => r.status === "stockout" || r.status === "critical" || r.status === "low")
     .sort((a, b) => a.daysOfStock - b.daysOfStock);
@@ -91,10 +100,12 @@ export function buildDashboard(store: Store): Dashboard {
     center: district.center,
     kpis: {
       activeAlerts: alerts.filter((a) => a.severity !== "watch").length,
-      reportingRate: Math.round((reported / facilities.length) * 100),
+      reportingRate: compSummary.reportingRate,
       criticalLines: rows.filter((r) => r.status === "stockout" || r.status === "critical").length,
       expiryWasteValue: expiryTotal,
       bedsUnderPressure: facilities.filter((f) => f.beds > 0 && f.bedOccupied / f.beds >= 0.9).length,
+      silentCount: compSummary.silentCount,
+      blindSpotCount: compSummary.blindSpotCount,
     },
     alerts,
     facilities,
@@ -102,6 +113,7 @@ export function buildDashboard(store: Store): Dashboard {
     expiry: expiry.slice(0, 10),
     expiryTotal,
     transfers,
+    compliance,
     intakeLog: store.intakeLog.slice(0, 5),
   };
 }

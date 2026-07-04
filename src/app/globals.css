@@ -164,7 +164,7 @@ main.shell {
 /* KPI cards */
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 12px;
   margin-bottom: 16px;
 }
@@ -279,6 +279,14 @@ main.shell {
 .badge.surplus {
   background: var(--purple-bg);
   color: var(--purple);
+}
+.badge.blindspot {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.badge.overdue {
+  background: var(--warn-bg);
+  color: var(--warn);
 }
 .badge.neutral {
   background: #eef2f5;
@@ -526,6 +534,47 @@ textarea:focus {
   gap: 8px;
   align-items: center;
   margin-bottom: 8px;
+}
+
+/* Reporter identity + on-the-spot photo */
+.reporter-block {
+  background: #f6f9fb;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  margin-top: 14px;
+}
+.reporter-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1.2fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 700px) {
+  .reporter-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.reporter-photo {
+  margin-top: 10px;
+}
+.reporter-video {
+  width: 240px;
+  max-width: 100%;
+  border-radius: 8px;
+  background: #000;
+  transform: scaleX(-1);
+}
+.reporter-photo-taken {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.reporter-photo-taken img {
+  width: 90px;
+  height: 90px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--line);
 }
 
 .rec-controls {

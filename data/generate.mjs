@@ -135,6 +135,24 @@ function newBatch(qty, expiryIso) {
   return { id: "B" + String(batchCounter).padStart(4, "0"), qty: Math.round(qty), expiry: expiryIso };
 }
 
+// ---- Reporting accountability ------------------------------------------
+// Every report is attributed to a named staff member. Some facilities are
+// seeded as SILENT (no report for N days) so the compliance layer has
+// blind spots to surface - including ones inside blocks that are flagging
+// an outbreak, the most dangerous kind.
+const REPORTER_NAMES = [
+  "Sanjukta Behera", "Pradeep Nayak", "Laxmi Majhi", "Bibhuti Pradhan",
+  "Anita Sahu", "Rakesh Meher", "Sunita Bag", "Debasis Rout", "Kabita Naik",
+  "Manoj Patra", "Jyoti Mishra", "Santosh Dandsena", "Rina Harijan",
+  "Ashok Bhoi", "Purnima Sethi", "Gopal Karsan",
+];
+const REPORTER_ROLES = ["Pharmacist", "ANM", "Staff Nurse", "MPHW (M)", "Medical Officer"];
+
+// facility id -> days since last report (blind spots in alert-flagging blocks
+// Thuamul Rampur, Kesinga come first; the rest are routine negligence).
+const SILENT_SEEDS = { PHC13: 4, PHC05: 3, PHC22: 2, PHC16: 2 };
+
+let facIndex = 0;
 const facilitiesOut = {};
 
 for (const fac of district.facilities) {
@@ -268,8 +286,27 @@ for (const fac of district.facilities) {
   }
 
   const alwaysReports = Boolean(outbreak) || fac.type === "DHH" || fac.type === "SDH";
+  let lastReportDaysAgo;
+  if (SILENT_SEEDS[fac.id] != null) lastReportDaysAgo = SILENT_SEEDS[fac.id];
+  else if (alwaysReports) lastReportDaysAgo = 0;
+  else {
+    const r = rnd();
+    lastReportDaysAgo = r < 0.8 ? 0 : r < 0.95 ? 1 : 2;
+  }
+
+  // Whoever last submitted for this facility - the person the district calls
+  // when the centre is overdue.
+  const lastReporter = {
+    name: REPORTER_NAMES[facIndex % REPORTER_NAMES.length],
+    role: REPORTER_ROLES[facIndex % REPORTER_ROLES.length],
+    staffId: `KLH-${fac.type}-${String(1042 + facIndex * 7).padStart(4, "0")}`,
+    photo: null,
+  };
+  facIndex += 1;
+
   facilitiesOut[fac.id] = {
-    reportedToday: alwaysReports ? true : rnd() < 0.9,
+    lastReportDaysAgo,
+    lastReporter,
     series,
     stock,
   };

@@ -36,6 +36,18 @@ for (const e of dash.expiry.slice(0, 8)) {
 }
 console.log(`District total expiry waste (120d): Rs ${dash.expiryTotal.toLocaleString("en-IN")}`);
 
+console.log("\n=== Reporting compliance ===");
+console.log(
+  `reporting rate ${dash.kpis.reportingRate}% | silent ${dash.kpis.silentCount} | blind spots ${dash.kpis.blindSpotCount}`
+);
+for (const c of dash.compliance.filter((r) => r.severity !== "ok")) {
+  console.log(
+    `[${c.severity.toUpperCase()}] ${c.facilityName} (${c.block}) — ${c.daysSinceReport}d silent` +
+      (c.inAlertBlock ? " — IN ALERT BLOCK" : "") +
+      (c.lastReporter ? ` — last: ${c.lastReporter.name}, ${c.lastReporter.role} (${c.lastReporter.staffId})` : "")
+  );
+}
+
 console.log("\n=== Transfers (top 10) ===");
 for (const tr of dash.transfers.slice(0, 10)) {
   console.log(
