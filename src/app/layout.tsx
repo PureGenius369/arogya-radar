@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ResetButton from "@/components/ResetButton";
+import Logo from "@/components/Logo";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <header className="site-header">
           <div className="shell header-inner">
             <Link href="/" className="brand">
-              <span className="brand-mark">⌖</span>
+              <Logo size={40} />
               <span>
                 <span className="brand-name">Arogya Radar</span>
                 <span className="brand-sub">Kalahandi District Health Command Centre · Odisha</span>
