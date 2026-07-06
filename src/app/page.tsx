@@ -75,7 +75,12 @@ export default function CommandCentre() {
               36 facilities · dashed circles mark blocks with an active outbreak signal · click a
               pin for details
             </p>
-            <DistrictMap center={dash.center} facilities={dash.facilities} zones={zones} />
+            <DistrictMap
+              center={dash.center}
+              facilities={dash.facilities}
+              zones={zones}
+              mapsApiKey={process.env.GOOGLE_MAPS_API_KEY}
+            />
           </div>
 
           <div className="card">
