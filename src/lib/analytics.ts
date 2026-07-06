@@ -22,6 +22,7 @@ export interface FacilityStatus {
   worstStock: string; // status of the worst drug line
   criticalDrugs: number;
   footfallToday: number;
+  caseLoad: number; // today's fever + fever_rash + diarrhoea, for the heatmap
 }
 
 export interface Dashboard {
@@ -85,6 +86,8 @@ export function buildDashboard(store: Store): Dashboard {
       worstStock: worst,
       criticalDrugs: facRows.filter((r) => r.status === "stockout" || r.status === "critical").length,
       footfallToday: fd?.series.footfall[t] ?? 0,
+      caseLoad:
+        (fd?.series.fever[t] ?? 0) + (fd?.series.fever_rash[t] ?? 0) + (fd?.series.diarrhoea[t] ?? 0),
     };
   });
 

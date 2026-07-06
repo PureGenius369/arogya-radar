@@ -385,6 +385,37 @@ table.data td.num {
   overflow: hidden;
   border: 1px solid var(--line);
 }
+.map-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.map-controls select {
+  width: auto;
+  min-width: 240px;
+  font-size: 13px;
+  padding: 6px 10px;
+}
+.map-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.map-toggle input {
+  width: auto;
+}
+.route-info {
+  font-size: 12.5px;
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
 .map-legend {
   display: flex;
   gap: 14px;

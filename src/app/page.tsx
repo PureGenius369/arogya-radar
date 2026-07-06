@@ -79,6 +79,7 @@ export default function CommandCentre() {
               center={dash.center}
               facilities={dash.facilities}
               zones={zones}
+              transfers={dash.transfers.slice(0, 8)}
               mapsApiKey={process.env.GOOGLE_MAPS_API_KEY}
             />
           </div>

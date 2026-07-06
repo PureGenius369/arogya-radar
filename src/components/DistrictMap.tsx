@@ -1,6 +1,7 @@
 "use client";
 
 import type { FacilityStatus } from "@/lib/analytics";
+import type { TransferRec } from "@/lib/types";
 import LeafletDistrictMap from "./LeafletDistrictMap";
 import GoogleDistrictMap from "./GoogleDistrictMap";
 
@@ -14,6 +15,8 @@ export interface DistrictMapProps {
   center: { lat: number; lng: number };
   facilities: FacilityStatus[];
   zones: AlertZone[];
+  /** Transfer recommendations, for drawing road routes (Google Maps only). */
+  transfers?: TransferRec[];
   /** Passed from the server (runtime env) so Cloud Run can set it at deploy. */
   mapsApiKey?: string;
 }
