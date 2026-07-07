@@ -126,21 +126,24 @@ export default function GoogleDistrictMap({
     const g = google.maps;
     if (heatOn) {
       if (!heatRef.current) {
+        // Normalise by the strongest facility, with a falloff so only genuine
+        // hotspots (the outbreak blocks) light up and normal areas stay faint.
+        const max = Math.max(1, ...facilities.map((f) => f.outbreakIntensity));
         heatRef.current = facilities
-          .filter((f) => f.caseLoad > 0)
-          .map(
-            (f) =>
-              new g.Circle({
-                map,
-                center: { lat: f.lat, lng: f.lng },
-                radius: 2500 + f.caseLoad * 350,
-                strokeWeight: 0,
-                fillColor: "#e24b4a",
-                fillOpacity: Math.min(0.45, 0.06 + f.caseLoad * 0.012),
-                clickable: false,
-                zIndex: 1,
-              })
-          );
+          .filter((f) => f.outbreakIntensity > 0)
+          .map((f) => {
+            const k = Math.pow(f.outbreakIntensity / max, 1.4);
+            return new g.Circle({
+              map,
+              center: { lat: f.lat, lng: f.lng },
+              radius: 1800 + k * 7000,
+              strokeWeight: 0,
+              fillColor: "#e24b4a",
+              fillOpacity: 0.05 + k * 0.4,
+              clickable: false,
+              zIndex: 1,
+            });
+          });
       } else {
         heatRef.current.forEach((c) => c.setMap(map));
       }
