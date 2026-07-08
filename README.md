@@ -76,9 +76,14 @@ gcloud run deploy arogya-radar --source . --region asia-south1 \
 
 ## Google Cloud technologies
 
-- **Gemini (multimodal)** — voice-note and register-photo parsing to strict JSON; multilingual brief generation
-- **Cloud Run** — containerised deployment (Dockerfile included)
-- Pilot roadmap: **Firestore** for durable storage, **WhatsApp Business/Speech-to-Text** intake channel, **BigQuery** for cross-district analytics, export to **IDSP/e-Aushadhi** formats
+Four Google Cloud services doing real work:
+
+- **Gemini 2.5** (Pro + Flash, multimodal) — voice-note and register-photo parsing to strict JSON; multilingual brief generation
+- **Cloud Run** — containerised, serverless deployment (Dockerfile included; the live public URL)
+- **Maps JavaScript API** — the interactive district map: facility pins, outbreak-zone circles, and the case-intensity heatmap
+- **Directions API** — real road route + distance/ETA for medicine transfers (falls back to OpenStreetMap/Leaflet if no Maps key is set)
+
+Pilot roadmap: **Firestore** for durable storage, **BigQuery** for cross-district analytics, **Speech-to-Text + WhatsApp Business** intake channel, export to **IDSP/e-Aushadhi** formats.
 
 ## Architecture
 
