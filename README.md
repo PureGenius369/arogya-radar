@@ -33,8 +33,8 @@ Plus a one-click **weekly brief** for the Collector/CDMO — Gemini turns the an
 
 A deliberate division of labour:
 
-- **Gemini does perception and language** — reading messy registers, understanding code-switched Odia/Hindi voice notes, writing briefs. The two tasks nothing else can do.
-- **Detection and forecasting are classical, auditable statistics** — a district health officer must be able to see exactly why an alert fired ("87 fever cases today vs baseline 30.9 ± 7.9, flagged 3 days running, 3 of 3 centres in the block"). Real surveillance systems (CDC EARS, WHO EWARS) work this way, and so do we.
+- **Gemini does perception and language** — reading messy registers, understanding code-switched Odia/Hindi voice notes, and writing briefs: the things nothing else can do.
+- **Detection and forecasting are classical, auditable statistics** — a district health officer must be able to see exactly why an alert fired ("87 fever cases today vs a baseline near 30, flagged 3 days running, 3 of 3 centres in the block"). Real surveillance systems (CDC EARS, WHO EWARS) work this way, and so do we.
 
 No GEMINI_API_KEY? The app runs in **mock mode**: intake and briefs return labelled canned outputs so the full flow always works; every analytic remains fully live.
 
