@@ -9,3 +9,6 @@ npm-debug.log*
 *.tsbuildinfo
 next-env.d.ts
 .claude/
+
+# Pitch deck & internal run-sheet (deck is submitted separately as a PDF)
+pitch/
