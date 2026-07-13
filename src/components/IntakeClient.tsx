@@ -34,6 +34,16 @@ interface Draft {
 
 const EMPTY_DRAFT: Draft = { footfall: null, bedOccupied: null, syndromes: {}, stock: [], notes: "" };
 
+// Designed demo voice notes — each tied to a facility so submitting it moves
+// the dashboard in a visible way. "Load a sample voice note" picks one at random.
+const VOICE_SAMPLES: { file: string; facilityId: string }[] = [
+  { file: "/samples/voice-1.wav", facilityId: "PHC13" }, // Gunupur: silent blind spot reports in
+  { file: "/samples/voice-2.wav", facilityId: "PHC11" }, // Lanjigarh Road: outbreak spike + stockout
+  { file: "/samples/voice-3.wav", facilityId: "PHC16" }, // Boden Road: diarrhoea cluster + blind spot
+  { file: "/samples/voice-4.wav", facilityId: "PHC05" }, // Pastikudi: fever/rash block + blind spot
+  { file: "/samples/voice-5.wav", facilityId: "PHC22" }, // Mahaling: snakebite + ASV shortage
+];
+
 type Tab = "voice" | "photo" | "manual";
 type Step = "input" | "review" | "done";
 
@@ -163,19 +173,28 @@ export default function IntakeClient({
   }
 
   // Bundled demo assets so a visitor without a mic, register, or Hindi can
-  // still experience the real Gemini parse in two clicks. Both samples
-  // describe PHC Biswanathpur, so the facility select follows along.
+  // still experience the real Gemini parse in two clicks. Each voice sample is
+  // a designed scenario tied to a facility that moves the dashboard: a silent
+  // blind spot reporting in, an outbreak spike, a diarrhoea cluster, a fever
+  // block, a snakebite/stock shortage. "Load a sample" picks one at random.
   async function loadSample(kind: "audio" | "image") {
     setSampleLoading(true);
     setError(null);
     try {
-      const url = kind === "audio" ? "/samples/voice-sample.wav" : "/samples/register-sample.jpg";
+      let url: string;
+      let facilityToSet: string | undefined;
+      if (kind === "audio") {
+        const s = VOICE_SAMPLES[Math.floor(Math.random() * VOICE_SAMPLES.length)];
+        url = s.file;
+        facilityToSet = s.facilityId;
+      } else {
+        url = "/samples/register-sample.jpg";
+        facilityToSet = "PHC10"; // the register image is Biswanathpur-specific
+      }
       const res = await fetch(url);
       if (!res.ok) throw new Error();
       const blob = await res.blob();
-      // The register photo is Biswanathpur-specific, so select it; the voice
-      // note is facility-agnostic, so keep whatever facility the user chose.
-      if (kind === "image" && facilities.some((f) => f.id === "PHC10")) setFacilityId("PHC10");
+      if (facilityToSet && facilities.some((f) => f.id === facilityToSet)) setFacilityId(facilityToSet);
       if (kind === "audio") {
         const f = new File([blob], "voice-sample.wav", { type: "audio/wav" });
         setAudioBlob(f);
