@@ -72,7 +72,11 @@ export default function IntakeClient({
   const [applied, setApplied] = useState<string[]>([]);
 
   const [reporter, setReporter] = useState<ReporterValue>({ name: "", staffId: "", role: "", photo: null });
-  const reporterComplete = reporter.name.trim() !== "" && reporter.staffId.trim() !== "" && reporter.role !== "";
+  const reporterComplete =
+    reporter.name.trim() !== "" &&
+    reporter.staffId.trim() !== "" &&
+    reporter.role !== "" &&
+    !!reporter.photo;
 
   const facility = facilities.find((f) => f.id === facilityId);
   const facilityDrugs = drugs.filter((d) => !facility || d.tiers.includes(facility.type));
@@ -169,7 +173,9 @@ export default function IntakeClient({
       const res = await fetch(url);
       if (!res.ok) throw new Error();
       const blob = await res.blob();
-      if (facilities.some((f) => f.id === "PHC10")) setFacilityId("PHC10");
+      // The register photo is Biswanathpur-specific, so select it; the voice
+      // note is facility-agnostic, so keep whatever facility the user chose.
+      if (kind === "image" && facilities.some((f) => f.id === "PHC10")) setFacilityId("PHC10");
       if (kind === "audio") {
         const f = new File([blob], "voice-sample.wav", { type: "audio/wav" });
         setAudioBlob(f);
@@ -204,7 +210,7 @@ export default function IntakeClient({
   async function submit() {
     if (!facility) return;
     if (!reporterComplete) {
-      setError("Please fill the reporter's name, staff ID and role before sending.");
+      setError("Please add the reporter's name, staff ID, role and an on-the-spot photo before sending.");
       return;
     }
     setSubmitting(true);
@@ -333,7 +339,7 @@ export default function IntakeClient({
           </div>
         ) : (
           <div className="notice warn">
-            Reporter details are required — go Back and fill name, staff ID and role.
+            Reporter details are required — go Back and add name, staff ID, role and a photo.
           </div>
         )}
 

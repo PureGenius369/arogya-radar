@@ -121,7 +121,7 @@ export default function ReporterBlock({
           </div>
         ) : (
           <button className="btn sm secondary" onClick={openCamera}>
-            📷 Take reporter photo on the spot
+            📷 Take reporter photo on the spot <span style={{ color: "var(--danger)" }}>*</span>
           </button>
         )}
         {camError && <div className="notice warn" style={{ marginTop: 8 }}>{camError}</div>}
