@@ -86,7 +86,6 @@ Today's date is ${today}. Extract the daily report as JSON with EXACTLY this sha
     "maternal": number | null, "injury": number | null
   },
   "bedOccupied": number | null,   // inpatient beds currently occupied
-  "doctorsPresent": number | null, // doctors on duty today, if mentioned
   "stock": [                      // ONLY medicines actually mentioned, matched to the catalogue below
     { "drugId": string, "onHand": number, "expiry": "YYYY-MM-DD" | null }
   ],
@@ -127,7 +126,6 @@ function mockIntake(facility: Facility, today: string): IntakeParseResult {
       footfall: 64,
       syndromes: { fever: 18, fever_rash: 4, diarrhoea: 6, ari: 9 },
       bedOccupied: isChc ? 21 : 3,
-      doctorsPresent: isChc ? 3 : 1,
       stock: [
         { drugId: "paracetamol_500", onHand: 350, expiry: null },
         { drugId: "ors_sachet", onHand: 80, expiry: today.slice(0, 4) + "-08-31" },
@@ -199,7 +197,6 @@ export async function parseIntake(opts: {
       footfall: clampInt(parsed.footfall, 100000),
       syndromes,
       bedOccupied: clampInt(parsed.bedOccupied, 10000),
-      doctorsPresent: clampInt(parsed.doctorsPresent, 200),
       stock,
       notes: typeof parsed.notes === "string" ? parsed.notes : null,
       uncertain: Array.isArray(parsed.uncertain)

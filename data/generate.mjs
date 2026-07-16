@@ -76,15 +76,6 @@ const SHARE = {
 const TYPE_MULT = { PHC: 1, CHC: 1.7, SDH: 2.4, DHH: 3.2 };
 const BED_BASE_OCC = { PHC: 0.25, CHC: 0.55, SDH: 0.7, DHH: 0.85 };
 
-// Doctor attendance: sanctioned posts by facility type, plus seeded chronic
-// shortfalls (posts that sit vacant — the "unpredictable doctor attendance"
-// the problem statement calls out).
-const DOCTORS_SANCTIONED = { PHC: 2, CHC: 4, SDH: 8, DHH: 15 };
-const DOCTOR_SHORTFALL = { PHC10: 1, PHC13: 1, PHC22: 2, CHC07: 2, PHC16: 1 };
-
-// Facilities whose beds run hot (≥90% occupancy) so bed pressure is visible.
-const BED_PRESSURE = { DHH01: 0.94, CHC05: 0.93, CHC01: 0.91 };
-
 // Monsoon uplift by month for climate-sensitive syndromes (Apr..Jul window).
 function monsoonBoost(dateStr, syndrome) {
   const m = Number(dateStr.slice(5, 7));
@@ -172,12 +163,9 @@ for (const fac of district.facilities) {
   const chronicScale = fac.catchment / 25000;
   const footfallBase = 48 * scale;
 
-  const series = { footfall: [], bedOccupied: [], doctorsPresent: [] };
+  const series = { footfall: [], bedOccupied: [] };
   for (const s of SYNDROMES) series[s] = [];
   series.other = [];
-
-  const doctorsSanctioned = DOCTORS_SANCTIONED[fac.type];
-  const chronicAbsent = DOCTOR_SHORTFALL[fac.id] ?? 0;
 
   const outbreak = OUTBREAK_FACILITIES[fac.id];
 
@@ -214,27 +202,15 @@ for (const fac of district.facilities) {
     if (outbreak && t >= OUTBREAK_START) {
       occPressure = 1 + 0.55 * (1 - Math.exp(-(t - OUTBREAK_START) / 3));
     }
-    // Always draw the normal occupancy (keeps the seeded RNG sequence stable),
-    // then override for facilities we want running hot.
-    const normalOcc = Math.min(
+    const bedOccupied = Math.min(
       Math.round(fac.beds * 1.15),
       counts(fac.beds * BED_BASE_OCC[fac.type] * occPressure)
-    );
-    const bedOccupied = BED_PRESSURE[fac.id] ? Math.round(fac.beds * BED_PRESSURE[fac.id]) : normalOcc;
-
-    // Doctors present: sanctioned minus chronic vacancies, minus the odd day of
-    // unplanned absence. Deterministic (no rnd()) so it can't shift the seeded
-    // sequence the rest of the data depends on.
-    const doctorsPresent = Math.max(
-      0,
-      doctorsSanctioned - chronicAbsent - ((t * 7 + facIndex * 3) % 17 === 0 ? 1 : 0)
     );
 
     series.footfall.push(footfall);
     for (const s of SYNDROMES) series[s].push(dayCounts[s]);
     series.other.push(other);
     series.bedOccupied.push(bedOccupied);
-    series.doctorsPresent.push(doctorsPresent);
   }
 
   // --- stock simulation (FEFO) ---
@@ -334,7 +310,6 @@ for (const fac of district.facilities) {
   facilitiesOut[fac.id] = {
     lastReportDaysAgo,
     lastReporter,
-    doctorsSanctioned,
     series,
     stock,
   };

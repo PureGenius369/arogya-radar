@@ -23,8 +23,6 @@ export interface FacilityStatus {
   criticalDrugs: number;
   footfallToday: number;
   outbreakIntensity: number; // outbreak-signal weight for the heatmap (rash + diarrhoea)
-  doctorsPresent: number;
-  doctorsSanctioned: number;
 }
 
 export interface Dashboard {
@@ -40,7 +38,6 @@ export interface Dashboard {
     bedsUnderPressure: number; // facilities at >=90% occupancy
     silentCount: number; // facilities overdue on reporting
     blindSpotCount: number; // overdue facilities inside an alert block
-    doctorShortfall: number; // facilities with fewer doctors present than sanctioned
   };
   alerts: BlockAlert[];
   facilities: FacilityStatus[];
@@ -90,8 +87,6 @@ export function buildDashboard(store: Store): Dashboard {
       criticalDrugs: facRows.filter((r) => r.status === "stockout" || r.status === "critical").length,
       footfallToday: fd?.series.footfall[t] ?? 0,
       outbreakIntensity: (fd?.series.fever_rash[t] ?? 0) * 6 + (fd?.series.diarrhoea[t] ?? 0) * 2,
-      doctorsPresent: fd?.series.doctorsPresent?.[t] ?? 0,
-      doctorsSanctioned: fd?.doctorsSanctioned ?? 0,
     };
   });
 
@@ -113,7 +108,6 @@ export function buildDashboard(store: Store): Dashboard {
       bedsUnderPressure: facilities.filter((f) => f.beds > 0 && f.bedOccupied / f.beds >= 0.9).length,
       silentCount: compSummary.silentCount,
       blindSpotCount: compSummary.blindSpotCount,
-      doctorShortfall: facilities.filter((f) => f.doctorsPresent < f.doctorsSanctioned).length,
     },
     alerts,
     facilities,

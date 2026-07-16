@@ -66,11 +66,6 @@ export function applyReport(report: IntakeReport): { applied: string[] } {
     fac.series.bedOccupied[t] = Math.round(report.bedOccupied);
     applied.push("beds");
   }
-  if (report.doctorsPresent != null && report.doctorsPresent >= 0) {
-    if (!fac.series.doctorsPresent) fac.series.doctorsPresent = [];
-    fac.series.doctorsPresent[t] = Math.round(report.doctorsPresent);
-    applied.push("doctors");
-  }
   // Keep "other" consistent: footfall minus the specific syndromes.
   const specific = SYNDROMES.reduce((a, s) => a + (fac.series[s][t] ?? 0), 0);
   fac.series.other[t] = Math.max(0, (fac.series.footfall[t] ?? 0) - specific);
