@@ -27,12 +27,13 @@ interface StockLine {
 interface Draft {
   footfall: number | null;
   bedOccupied: number | null;
+  doctorsPresent: number | null;
   syndromes: Partial<Record<Syndrome, number | null>>;
   stock: StockLine[];
   notes: string;
 }
 
-const EMPTY_DRAFT: Draft = { footfall: null, bedOccupied: null, syndromes: {}, stock: [], notes: "" };
+const EMPTY_DRAFT: Draft = { footfall: null, bedOccupied: null, doctorsPresent: null, syndromes: {}, stock: [], notes: "" };
 
 // Designed demo voice notes — each tied to a facility so submitting it moves
 // the dashboard in a visible way. "Load a sample voice note" picks one at random.
@@ -153,6 +154,7 @@ export default function IntakeClient({
       setDraft({
         footfall: r.footfall ?? null,
         bedOccupied: r.bedOccupied ?? null,
+        doctorsPresent: r.doctorsPresent ?? null,
         syndromes: r.syndromes ?? {},
         stock: (r.stock ?? []).map((l: { drugId: string; onHand: number; expiry?: string | null }) => ({
           drugId: l.drugId,
@@ -240,6 +242,7 @@ export default function IntakeClient({
         date: today,
         footfall: draft.footfall,
         bedOccupied: draft.bedOccupied,
+        doctorsPresent: draft.doctorsPresent,
         syndromes: Object.fromEntries(
           Object.entries(draft.syndromes).filter(([, v]) => v != null)
         ),
@@ -370,6 +373,10 @@ export default function IntakeClient({
           <div>
             <label className="fld">Beds occupied right now</label>
             {numInput(draft.bedOccupied, (n) => setDraft({ ...draft, bedOccupied: n }), unc("bedOccupied"))}
+          </div>
+          <div>
+            <label className="fld">Doctors on duty today</label>
+            {numInput(draft.doctorsPresent, (n) => setDraft({ ...draft, doctorsPresent: n }), unc("doctorsPresent"))}
           </div>
         </div>
 

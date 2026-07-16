@@ -47,6 +47,7 @@ export function facilityPopupHtml(f: FacilityStatus): string {
     `<strong>${f.name}</strong><br/>${f.type} · ${f.block} block<br/>` +
     `OPD today: ${f.footfallToday}<br/>` +
     `Beds: ${f.bedOccupied}/${f.beds} (${occ}%)<br/>` +
+    `Doctors on duty: ${f.doctorsPresent}/${f.doctorsSanctioned}${f.doctorsPresent < f.doctorsSanctioned ? ` <span style="color:#b45309;font-weight:600">(short)</span>` : ""}<br/>` +
     `Critical medicine lines: ${f.criticalDrugs}<br/>` +
     (f.alertLevel ? `<span style="color:#dc2626;font-weight:600">Outbreak ${f.alertLevel}</span><br/>` : "") +
     reportLine

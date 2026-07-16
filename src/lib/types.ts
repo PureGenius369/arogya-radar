@@ -75,7 +75,8 @@ export interface Reporter {
 export interface FacilityData {
   lastReportDaysAgo: number; // 0 = reported today
   lastReporter?: Reporter | null;
-  series: Record<string, number[]>; // footfall, bedOccupied, other, each syndrome
+  doctorsSanctioned: number; // sanctioned doctor posts at this facility
+  series: Record<string, number[]>; // footfall, bedOccupied, doctorsPresent, other, each syndrome
   stock: Record<string, DrugStock>;
 }
 
@@ -175,6 +176,7 @@ export interface IntakeReport {
   footfall: number | null;
   syndromes: Partial<Record<Syndrome, number>>;
   bedOccupied?: number | null;
+  doctorsPresent?: number | null;
   stock: IntakeStockLine[];
   notes?: string | null;
   uncertain?: string[];

@@ -65,6 +65,10 @@ export default function CommandCentre() {
           <div className="v">{dash.kpis.bedsUnderPressure}</div>
           <div className="l">facilities ≥90% bed occupancy</div>
         </div>
+        <div className={`kpi ${dash.kpis.doctorShortfall > 0 ? "warn" : "ok"}`}>
+          <div className="v">{dash.kpis.doctorShortfall}</div>
+          <div className="l">facilities short of doctors on duty</div>
+        </div>
       </div>
 
       <div className="grid-2">
