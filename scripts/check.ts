@@ -21,6 +21,17 @@ for (const a of dash.alerts) {
   }
 }
 
+console.log("\n=== Consumption radar (no symptom entry) ===");
+for (const a of dash.consumptionAlerts) {
+  console.log(`[${a.severity.toUpperCase()}] ${a.block} — ${a.label}`);
+  console.log("   " + a.message);
+  for (const f of a.facilities) {
+    console.log(
+      `   ${f.facilityName}: ${f.todayUnits} vs ${f.baselineUnits} units/day (${f.ratio}x, z=${f.zscore}) — ${f.drivers.join(", ")}`
+    );
+  }
+}
+
 console.log("\n=== Worst shortages (top 10) ===");
 for (const s of dash.shortages.slice(0, 10)) {
   console.log(

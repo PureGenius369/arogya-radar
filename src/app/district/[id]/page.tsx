@@ -6,6 +6,8 @@ import DistrictMap from "@/components/DistrictMap";
 import BriefPanel from "@/components/BriefPanel";
 import Sparkline from "@/components/Sparkline";
 import DemoTour from "@/components/DemoTour";
+import DataSources from "@/components/DataSources";
+import Backtest from "@/components/Backtest";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +73,11 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
     .filter((a) => a.severity !== "watch")
     .map((a) => ({ block: a.block, severity: a.severity, label: a.label }));
 
+  // Lead-time back-test inputs: the strongest outbreak signal and how many days
+  // ago each radar first flagged it.
+  const topAlert = dash.alerts.find((a) => a.severity === "alert") ?? dash.alerts[0];
+  const topCons = dash.consumptionAlerts.find((a) => a.severity === "alert") ?? dash.consumptionAlerts[0];
+
   return (
     <div>
       <DemoTour />
@@ -107,6 +114,11 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
           <div className="v">{dash.kpis.bedsUnderPressure}</div>
           <div className="l">facilities ≥90% bed occupancy</div>
         </div>
+      </div>
+
+      <div className="card">
+        <h2>How this runs without a new data-entry burden</h2>
+        <DataSources />
       </div>
 
       <div className="grid-2">
@@ -218,6 +230,47 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
           ))}
         </div>
       </div>
+
+      {topAlert && (
+        <Backtest
+          endDate={dash.endDate}
+          block={topAlert.block}
+          radarLead={topAlert.startedDaysAgo}
+          consumptionLead={topCons?.startedDaysAgo ?? topAlert.startedDaysAgo}
+        />
+      )}
+
+      {dash.consumptionAlerts.length > 0 && (
+        <div className="card">
+          <h2>Second radar — outbreak signal from medicine consumption</h2>
+          <p className="sub">
+            The same aberration detection, run on how much of each outbreak medicine each facility is
+            drawing down (from e-Aushadhi supply-chain data) —{" "}
+            <strong>no symptom reporting needed</strong>. It independently corroborates the syndromic
+            radar above, and it keeps working even if not one facility files a report.
+          </p>
+          {dash.consumptionAlerts.map((a) => (
+            <div key={a.id} className={`alert-item ${a.severity}`}>
+              <div className="head">
+                <span className="title">
+                  {a.block} block — {a.label}
+                </span>
+                <span className={`badge ${a.severity}`}>{a.severity}</span>
+              </div>
+              <div className="msg">{a.message}</div>
+              {a.facilities.slice(0, 4).map((f) => (
+                <div key={f.facilityId} className="alert-fac">
+                  <span>{f.facilityName}</span>
+                  <Sparkline data={f.spark} stroke={a.severity === "alert" ? "#dc2626" : "#d97706"} />
+                  <span className="z">
+                    {f.todayUnits} vs {f.baselineUnits}/day ({f.ratio}×)
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="card">
         <h2>

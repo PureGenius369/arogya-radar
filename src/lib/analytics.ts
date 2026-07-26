@@ -3,6 +3,7 @@
 import type { AlertSeverity, BlockAlert, ComplianceRow, ExpiryRow, Reporter, StockRow, TransferRec } from "./types";
 import type { Store } from "./store";
 import { detectAlerts, facilityAlertLevels } from "./radar";
+import { detectConsumptionAlerts, type ConsumptionAlert } from "./consumption";
 import { expiryRows, stockRows, transferRecs } from "./stock";
 import { complianceRows, complianceSummary } from "./compliance";
 
@@ -40,6 +41,7 @@ export interface Dashboard {
     blindSpotCount: number; // overdue facilities inside an alert block
   };
   alerts: BlockAlert[];
+  consumptionAlerts: ConsumptionAlert[];
   facilities: FacilityStatus[];
   shortages: StockRow[];
   expiry: ExpiryRow[];
@@ -56,6 +58,7 @@ export function buildDashboard(store: Store): Dashboard {
   const t = records.days.length - 1;
 
   const alerts = detectAlerts(store);
+  const consumptionAlerts = detectConsumptionAlerts(store);
   const levels = facilityAlertLevels(alerts);
   const rows = stockRows(store);
   const expiry = expiryRows(store, 120);
@@ -110,6 +113,7 @@ export function buildDashboard(store: Store): Dashboard {
       blindSpotCount: compSummary.blindSpotCount,
     },
     alerts,
+    consumptionAlerts,
     facilities,
     shortages: shortages.slice(0, 15),
     expiry: expiry.slice(0, 10),

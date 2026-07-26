@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getStore } from "@/lib/store";
 import { buildDashboard } from "@/lib/analytics";
 import StateMap from "@/components/StateMap";
+import DataSources from "@/components/DataSources";
 
 export const dynamic = "force-dynamic";
 
@@ -132,6 +133,11 @@ export default function StateRadar() {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="card">
+        <h2>Not another data-entry app — an intelligence layer on data Gujarat already collects</h2>
+        <DataSources />
       </div>
 
       <div className="card provenance">
