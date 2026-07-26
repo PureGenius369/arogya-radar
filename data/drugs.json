@@ -1,5 +1,5 @@
 {
-  "note": "Subset of NLEM 2022 essential medicines stocked at Odisha PHC/CHC level. Prices approximate Jan Aushadhi / state procurement rates in INR per unit. perCase maps expected units dispensed per presenting case of each syndrome; dailyBase is chronic/ambient daily demand at scale 1 (~25k catchment PHC).",
+  "note": "Subset of NLEM 2022 essential medicines stocked at Gujarat PHC/CHC level. Prices approximate Jan Aushadhi / state procurement rates in INR per unit. perCase maps expected units dispensed per presenting case of each syndrome; dailyBase is chronic/ambient daily demand at scale 1 (~25k catchment PHC).",
   "drugs": [
     { "id": "paracetamol_500", "name": "Paracetamol 500 mg", "unit": "tab", "price": 0.9, "category": "Antipyretic", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "fever": 8, "ari": 4, "fever_rash": 6 }, "dailyBase": 15, "outbreak": ["fever", "fever_rash"] },
     { "id": "ors_sachet", "name": "ORS sachet (WHO)", "unit": "sachet", "price": 5.5, "category": "Rehydration", "tiers": ["PHC", "CHC", "SDH", "DHH"], "perCase": { "diarrhoea": 3, "fever_rash": 1 }, "dailyBase": 3, "outbreak": ["diarrhoea", "fever_rash"] },

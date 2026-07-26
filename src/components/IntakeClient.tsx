@@ -37,11 +37,11 @@ const EMPTY_DRAFT: Draft = { footfall: null, bedOccupied: null, syndromes: {}, s
 // Designed demo voice notes — each tied to a facility so submitting it moves
 // the dashboard in a visible way. "Load a sample voice note" picks one at random.
 const VOICE_SAMPLES: { file: string; facilityId: string }[] = [
-  { file: "/samples/voice-1.wav", facilityId: "PHC13" }, // Gunupur: silent blind spot reports in
-  { file: "/samples/voice-2.wav", facilityId: "PHC11" }, // Lanjigarh Road: outbreak spike + stockout
-  { file: "/samples/voice-3.wav", facilityId: "PHC16" }, // Boden Road: diarrhoea cluster + blind spot
-  { file: "/samples/voice-4.wav", facilityId: "PHC05" }, // Pastikudi: fever/rash block + blind spot
-  { file: "/samples/voice-5.wav", facilityId: "PHC22" }, // Mahaling: snakebite + ASV shortage
+  { file: "/samples/voice-1.wav", facilityId: "PHC20" }, // Chakaliya, Jhalod: silent blind spot reports in
+  { file: "/samples/voice-2.wav", facilityId: "PHC17" }, // Bilwani, Jhalod: outbreak spike + stockout
+  { file: "/samples/voice-3.wav", facilityId: "PHC14" }, // Sarsava, Fatepura: diarrhoea cluster + blind spot
+  { file: "/samples/voice-4.wav", facilityId: "PHC21" }, // Dhavdiya, Jhalod: fever/rash block + blind spot
+  { file: "/samples/voice-5.wav", facilityId: "CHC10" }, // Sanjeli: snakebite + ASV shortage
 ];
 
 type Tab = "voice" | "photo" | "manual";
@@ -295,7 +295,7 @@ export default function IntakeClient({
           transfer recommendations now include this report.
         </p>
         <p style={{ display: "flex", gap: 10 }}>
-          <Link className="btn" href="/">
+          <Link className="btn" href="/district/dahod">
             See what the district sees
           </Link>
           <button
@@ -495,9 +495,9 @@ export default function IntakeClient({
       {tab === "voice" && (
         <div>
           <p className="sub">
-            Speak today&apos;s numbers in <strong>Odia, Hindi or English</strong> — footfall, cases
-            by symptom, medicine stock. Example: “Aaji OPD 64 rogi, jwara 18, jhada 6. Paracetamol
-            350 tablet baki achhi.”
+            Speak today&apos;s numbers in <strong>Gujarati, Hindi or English</strong> — footfall,
+            cases by symptom, medicine stock. Example: “Aaje OPD 64 dardi, taav 18, zada 6.
+            Paracetamol 350 goli baaki chhe.”
           </p>
           <div className="rec-controls">
             {!recording ? (
@@ -548,8 +548,8 @@ export default function IntakeClient({
       {tab === "photo" && (
         <div>
           <p className="sub">
-            Photograph the daily register page — the AI reads handwriting, Odia or English headers,
-            and drafts the report for confirmation. (Need a sheet?{" "}
+            Photograph the daily register page — the AI reads handwriting, Gujarati or English
+            headers, and drafts the report for confirmation. (Need a sheet?{" "}
             <Link href="/register-template">Print the register template</Link>.)
           </p>
           <p className="sub">

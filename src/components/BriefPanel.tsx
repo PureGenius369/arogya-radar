@@ -5,7 +5,7 @@ import { useState } from "react";
 const LANGS = [
   { code: "en", label: "English" },
   { code: "hi", label: "हिन्दी" },
-  { code: "or", label: "ଓଡ଼ିଆ" },
+  { code: "gu", label: "ગુજરાતી" },
 ];
 
 export default function BriefPanel() {
@@ -63,7 +63,7 @@ export default function BriefPanel() {
         !loading && (
           <p className="sub">
             One click turns today&apos;s radar, stock and expiry picture into a plain-language brief
-            for the Collector and CDMO — in English, Hindi or Odia.
+            for the Collector and CDMO — in English, Hindi or Gujarati.
           </p>
         )
       )}

@@ -673,6 +673,149 @@ textarea:focus {
   }
 }
 
+/* ---- Statewide radar view ------------------------------------------------ */
+.state-map {
+  height: 560px;
+}
+@media (max-width: 800px) {
+  .state-map {
+    height: 380px;
+  }
+}
+
+/* District pins on the state map (Leaflet divIcon; className:"" removes the
+   default white box so these rules fully control the look). */
+.state-pin {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.state-pin .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex: none;
+}
+.state-pin.dark .dot {
+  background: #94a3b8;
+  border: 1.5px solid #fff;
+  opacity: 0.75;
+}
+.state-pin.live .dot {
+  background: var(--danger);
+  border: 2px solid #fff;
+  animation: ring-pulse 1.8s infinite;
+}
+@keyframes ring-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 13px rgba(220, 38, 38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+  }
+}
+.state-pin .label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--danger);
+  background: rgba(255, 255, 255, 0.92);
+  padding: 1px 6px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Hero band */
+.state-hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.hero-stat {
+  flex: none;
+}
+.hero-stat .big {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ok);
+}
+.hero-stat .big .of {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink-3);
+}
+.hero-stat .small {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-top: 4px;
+  max-width: 190px;
+}
+.hero-line {
+  flex: 1;
+  min-width: 280px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  border-left: 3px solid var(--line);
+  padding-left: 18px;
+}
+
+/* Dahod spotlight */
+.state-spotlight h2 {
+  margin-top: 6px;
+  font-size: 18px;
+}
+.spotlight-nums {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 12px 0 14px;
+}
+.spotlight-nums .v {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.spotlight-nums .v.danger {
+  color: var(--danger);
+}
+.spotlight-nums .v.warn {
+  color: var(--warn);
+}
+.spotlight-nums .v.accent {
+  color: var(--accent-ink);
+}
+.spotlight-nums .l {
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+/* How a district goes live */
+.steps {
+  margin: 0 0 10px;
+  padding-left: 18px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.steps li {
+  margin-bottom: 8px;
+}
+
+/* Onboarding placeholder (dark-district drill-down) */
+.onboarding h2 {
+  font-size: 18px;
+  margin: 10px 0 6px;
+}
+.provenance .sub {
+  margin: 0;
+}
+
 /* Register template print styles */
 .register-sheet {
   background: #fff;

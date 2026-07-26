@@ -76,7 +76,7 @@ export default function ReporterBlock({
         />
         <input
           type="text"
-          placeholder="Staff ID (e.g. KLH-PHC-0142)"
+          placeholder="Staff ID (e.g. DHD-PHC-0142)"
           value={value.staffId}
           onChange={(e) => onChange({ ...value, staffId: e.target.value })}
         />

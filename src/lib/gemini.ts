@@ -1,6 +1,6 @@
 // Gemini does exactly two jobs in Arogya Radar - the two things an LLM is
 // genuinely best at:
-//   1. Perception: voice note (Odia/Hindi/English) or register photo -> a
+//   1. Perception: voice note (Gujarati/Hindi/English) or register photo -> a
 //      structured daily report (strict JSON).
 //   2. Language: analytics JSON -> a plain-language weekly brief for the
 //      district administration.
@@ -20,7 +20,7 @@ import { SYNDROMES, SYNDROME_LABELS } from "./types";
 const apiKey = process.env.GEMINI_API_KEY?.trim();
 export const geminiEnabled = Boolean(apiKey && apiKey.length > 10 && apiKey !== "PASTE_YOUR_KEY_HERE");
 
-// Both jobs default to Flash: it handles multimodal intake (Odia/Hindi voice,
+// Both jobs default to Flash: it handles multimodal intake (Gujarati/Hindi voice,
 // register photos) well and has generous free-tier quota. Pro is marginally
 // sharper on the worst handwriting but the free Gemini tier grants it almost
 // no quota (429s immediately) - it needs billing enabled. If you enable
@@ -53,14 +53,14 @@ function clampInt(v: unknown, max = 100000): number | null {
 // ---- Intake parsing --------------------------------------------------------
 
 const SYNDROME_HINTS: Record<string, string> = {
-  fever: "fever / jwara / ଜ୍ୱର / bukhar",
-  fever_rash: "fever WITH rash or body spots / daag ke saath bukhar / ଜ୍ୱର ସହ ଦାଗ",
-  diarrhoea: "loose motion, diarrhoea / dast / ଝାଡ଼ା",
-  ari: "cough, cold, breathing trouble / khansi / କାଶ",
-  jaundice: "jaundice, yellow eyes / piliya / କାମଳ",
-  snakebite: "snake bite / saanp kata / ସାପ କାମୁଡ଼ା",
-  maternal: "pregnant women ANC checkup / garbhvati janch",
-  injury: "injury, accident, wound / chot",
+  fever: "fever / taav / તાવ / bukhar",
+  fever_rash: "fever WITH rash or body spots / chakama sathe taav / ચકામા સાથે તાવ",
+  diarrhoea: "loose motion, diarrhoea / zada / ઝાડા",
+  ari: "cough, cold, breathing trouble / khaansi, udhras / ઉધરસ",
+  jaundice: "jaundice, yellow eyes / kamdo / કમળો",
+  snakebite: "snake bite / saap karadyo / સાપ કરડ્યો",
+  maternal: "pregnant women ANC checkup / sagarbha tapaas",
+  injury: "injury, accident, wound / ijaa / ઈજા",
 };
 
 function intakePrompt(mode: "audio" | "image", facility: Facility, drugs: Drug[], today: string): string {
@@ -71,8 +71,8 @@ function intakePrompt(mode: "audio" | "image", facility: Facility, drugs: Drug[]
   const synList = SYNDROMES.map((s) => `${s}: ${SYNDROME_HINTS[s]}`).join("\n");
   const source =
     mode === "audio"
-      ? `The attached audio is a voice note from a staff member at ${facility.name} (a ${facility.type} in Kalahandi district, Odisha) reporting today's activity. The speaker may use Odia, Hindi, English, or a mix (including code-switching and local medicine names).`
-      : `The attached image is a photo of a page from the paper daily register of ${facility.name} (a ${facility.type} in Kalahandi district, Odisha). Handwriting may be messy; headers may be in Odia or English.`;
+      ? `The attached audio is a voice note from a staff member at ${facility.name} (a ${facility.type} in Dahod district, Gujarat) reporting today's activity. The speaker may use Gujarati, Hindi, English, or a mix (including code-switching and local medicine names).`
+      : `The attached image is a photo of a page from the paper daily register of ${facility.name} (a ${facility.type} in Dahod district, Gujarat). Handwriting may be messy; headers may be in Gujarati or English.`;
 
   return `${source}
 
@@ -93,7 +93,7 @@ Today's date is ${today}. Extract the daily report as JSON with EXACTLY this sha
   "uncertain": string[]           // field names you are NOT confident about (e.g. "footfall", "stock.paracetamol_500")
 }
 
-Symptom category meanings (with common Odia/Hindi terms):
+Symptom category meanings (with common Gujarati/Hindi terms):
 ${synList}
 
 Medicine catalogue (use drugId exactly; skip medicines not in this list but mention them in notes):
@@ -102,7 +102,7 @@ ${drugList}
 Rules:
 - Numbers must be plain integers. Never invent values: if something is not stated or not legible, use null and add the field to "uncertain".
 - "fever_rash" counts fever cases WITH rash separately from plain "fever". Do not double count: a fever-with-rash case goes only in fever_rash.
-- Convert spoken number words in any language ("pachattar", "ପଚାଶ") to digits.
+- Convert spoken number words in any language ("pachhoter", "પચાસ") to digits.
 - Output ONLY the JSON object, no markdown fences, no commentary.`;
 }
 
@@ -117,9 +117,9 @@ function mockIntake(facility: Facility, today: string): IntakeParseResult {
   return {
     mock: true,
     transcript:
-      "(mock mode — add GEMINI_API_KEY for real parsing) Namaskar, aaji " +
+      "(mock mode — add GEMINI_API_KEY for real parsing) Namaste, aaje " +
       facility.name +
-      " re OPD 64 rogi. Jwara 18 jana, jwara-daag 4 jana, jhada 6, kaasi 9. Paracetamol 350 tablet achhi, ORS 80 packet, expiry August sesa. Dhanyabad.",
+      " ma OPD 64 dardi. Taav 18 jan, chakama sathe taav 4, zada 6, udhras 9. Paracetamol 350 goli chhe, ORS 80 packet, expiry August. Aabhar.",
     report: {
       facilityId: facility.id,
       date: today,
@@ -208,14 +208,14 @@ export async function parseIntake(opts: {
 
 // ---- Weekly brief ----------------------------------------------------------
 
-const LANG_NAME: Record<string, string> = { en: "English", hi: "Hindi", or: "Odia" };
+const LANG_NAME: Record<string, string> = { en: "English", hi: "Hindi", gu: "Gujarati" };
 
 export async function generateBrief(payload: object, language: string): Promise<{ text: string; mock: boolean }> {
   if (!geminiEnabled) {
     return { text: mockBrief(payload), mock: true };
   }
   const lang = LANG_NAME[language] ?? "English";
-  const prompt = `You are writing the weekly district health brief for the District Collector and CDMO of Kalahandi district, Odisha. They are busy non-technical administrators: plain language, short sentences, no jargon, no markdown tables.
+  const prompt = `You are writing the weekly district health brief for the District Collector and CDMO of Dahod district, Gujarat. They are busy non-technical administrators: plain language, short sentences, no jargon, no markdown tables.
 
 Write in ${lang}. Structure (use these numbered sections with short headings):
 1. Outbreak radar — what is flaring, where, since when, and how confident we are. Lead with the single most important thing.
@@ -247,8 +247,8 @@ function mockBrief(payload: object): string {
     transfers?: { drugName: string; qty: number; unit: string; fromName: string; toName: string; valueSaved: number }[];
   };
   const lines: string[] = [];
-  lines.push(`KALAHANDI DISTRICT HEALTH BRIEF — week ending ${p.endDate ?? ""}`);
-  lines.push(`(mock mode — add GEMINI_API_KEY for AI-written briefs in English/Hindi/Odia)`);
+  lines.push(`DAHOD DISTRICT HEALTH BRIEF — week ending ${p.endDate ?? ""}`);
+  lines.push(`(mock mode — add GEMINI_API_KEY for AI-written briefs in English/Hindi/Gujarati)`);
   lines.push("");
   lines.push("1. OUTBREAK RADAR");
   for (const a of (p.alerts ?? []).slice(0, 4)) {

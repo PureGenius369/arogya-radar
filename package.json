@@ -2,7 +2,7 @@
   "name": "arogya-radar",
   "version": "0.1.0",
   "private": true,
-  "description": "Arogya Radar — district health command centre with AI intake and outbreak early-warning for Kalahandi, Odisha",
+  "description": "Arogya Radar — Gujarat state health radar with AI intake and outbreak early-warning; live pilot district: Dahod",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

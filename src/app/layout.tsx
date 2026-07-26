@@ -6,9 +6,9 @@ import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Arogya Radar — Kalahandi District Health Command Centre",
+  title: "Arogya Radar — Gujarat State Health Radar",
   description:
-    "AI-powered intake, outbreak early-warning and medicine redistribution for PHCs and CHCs. Built for Build with AI: Code for Communities, Track 3 Smart Health.",
+    "AI-powered intake, outbreak early-warning and medicine redistribution for PHCs and CHCs across Gujarat. Live pilot: Dahod district.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -21,11 +21,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Logo size={40} />
               <span>
                 <span className="brand-name">Arogya Radar</span>
-                <span className="brand-sub">Kalahandi District Health Command Centre · Odisha</span>
+                <span className="brand-sub">Gujarat State Health Radar · pilot: Dahod</span>
               </span>
             </Link>
             <nav className="site-nav">
-              <Link href="/">Command centre</Link>
+              <Link href="/">State radar</Link>
               <Link href="/intake">Submit report</Link>
               <Link href="/register-template">Register template</Link>
             </nav>

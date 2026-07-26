@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { DistrictFile, Drug, Facility, IntakeReport, Reporter, RecordsFile, Syndrome } from "./types";
+import type { DistrictFile, Drug, Facility, IntakeReport, Reporter, RecordsFile, StateFile, Syndrome } from "./types";
 import { SYNDROMES } from "./types";
 
 export interface Store {
+  state: StateFile;
   district: DistrictFile;
   drugs: Drug[];
   records: RecordsFile;
@@ -15,10 +16,11 @@ const g = globalThis as unknown as { __arogyaStore?: Store };
 
 function load(): Store {
   const dataDir = path.join(process.cwd(), "data");
+  const state = JSON.parse(fs.readFileSync(path.join(dataDir, "gujarat.json"), "utf8")) as StateFile;
   const district = JSON.parse(fs.readFileSync(path.join(dataDir, "district.json"), "utf8")) as DistrictFile;
   const drugs = (JSON.parse(fs.readFileSync(path.join(dataDir, "drugs.json"), "utf8")) as { drugs: Drug[] }).drugs;
   const records = JSON.parse(fs.readFileSync(path.join(dataDir, "records.json"), "utf8")) as RecordsFile;
-  return { district, drugs, records, intakeLog: [] };
+  return { state, district, drugs, records, intakeLog: [] };
 }
 
 export function getStore(): Store {

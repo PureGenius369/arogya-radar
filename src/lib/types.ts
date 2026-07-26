@@ -19,6 +19,34 @@ export interface DistrictFile {
   facilities: Facility[];
 }
 
+// ---- State (statewide command view) ---------------------------------------
+
+export interface DistrictSummary {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  live: boolean;
+  phc?: number;
+  chc?: number;
+}
+
+export interface StateFile {
+  state: string;
+  center: { lat: number; lng: number };
+  flagship: string; // district id of the live pilot
+  note: string;
+  totals: {
+    districts: number;
+    phc: number;
+    chc: number;
+    sdh: number;
+    dh: number;
+    subCentre: number;
+  };
+  districts: DistrictSummary[];
+}
+
 export interface Drug {
   id: string;
   name: string;

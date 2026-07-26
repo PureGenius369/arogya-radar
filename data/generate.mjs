@@ -2,11 +2,11 @@
 // Produces data/records.json: 90 days of daily facility activity (footfall,
 // syndrome counts, bed occupancy) plus batch-level drug stock simulated with
 // FEFO consumption, monthly indents, a seeded dengue-like outbreak in
-// Lanjigarh block and near-expiry surplus batches in the west of the district.
+// Jhalod block and near-expiry surplus batches in the west of the district.
 // Deterministic (seeded RNG) so regeneration is stable.
 //
-// Calibration targets: HMIS item-wise monthly reports for Kalahandi
-// (data.gov.in), IDSP weekly outbreak reports for Odisha. Daily
+// Calibration targets: HMIS item-wise monthly reports for Dahod / Gujarat
+// (data.gov.in), IDSP weekly outbreak reports for Gujarat. Daily
 // facility-level data does not exist publicly - that gap is what the
 // product's intake pipeline creates.
 
@@ -96,20 +96,22 @@ function weekdayFactor(dateStr) {
 
 // ---- Seeded events -------------------------------------------------------
 
-// Dengue-like outbreak: Lanjigarh block + adjacent Thuamul Rampur PHC.
-// Signal starts 9 days before "today" and ramps.
+// Dengue-like outbreak: Jhalod block (tribal, near the MP border - real
+// malaria/dengue territory). CHC Mirakhedi, CHC Zalod and the surrounding
+// Jhalod PHCs rise together. Signal starts 9 days before "today" and ramps.
 const OUTBREAK_START = DAYS - 9;
 const OUTBREAK_FACILITIES = {
-  CHC05: { feverMult: 1.7, rashBase: 2.0 },
-  PHC10: { feverMult: 1.9, rashBase: 1.6 },
-  PHC11: { feverMult: 1.5, rashBase: 1.2 },
-  PHC12: { feverMult: 1.4, rashBase: 0.9 },
+  CHC07: { feverMult: 1.7, rashBase: 2.0 }, // CHC Mirakhedi
+  CHC11: { feverMult: 1.6, rashBase: 1.7 }, // CHC Zalod
+  PHC17: { feverMult: 1.9, rashBase: 1.6 }, // PHC Bilwani
+  PHC18: { feverMult: 1.5, rashBase: 1.2 }, // PHC Kadval
+  PHC19: { feverMult: 1.4, rashBase: 0.9 }, // PHC Sarmariya
 };
 const OUTBREAK_DRUGS = ["paracetamol_500", "ors_sachet", "iv_ns_500", "ns1_dengue", "ringer_lactate"];
 
-// Single-day diarrhoea blip at CHC Junagarh (decoy the radar should NOT
-// escalate - demonstrates it doesn't cry wolf).
-const BLIP = { facility: "CHC07", day: DAYS - 2, syndrome: "diarrhoea", add: 9 };
+// Single-day diarrhoea blip at CHC Sagtala, Devgadh Baria (decoy the radar
+// should NOT escalate - demonstrates it doesn't cry wolf).
+const BLIP = { facility: "CHC03", day: DAYS - 2, syndrome: "diarrhoea", add: 9 };
 
 // Near-expiry surplus batches (the expiry-waste story), modelled as a bulk
 // push from the state warehouse arriving SEED_PUSH_DAY days before "today",
@@ -118,12 +120,12 @@ const BLIP = { facility: "CHC07", day: DAYS - 2, syndrome: "diarrhoea", add: 9 }
 // so a genuine unconsumable surplus remains at day 90.
 const SEED_PUSH_AGO = 40; // push arrived 40 days before today
 const EXPIRY_SEEDS = [
-  { facility: "CHC01", drug: "amoxicillin_500", daysToExpiry: 55, overFactor: 2.2 },
-  { facility: "PHC04", drug: "iv_ns_500", daysToExpiry: 48, overFactor: 2.6 },
+  { facility: "CHC04", drug: "amoxicillin_500", daysToExpiry: 55, overFactor: 2.2 },
+  { facility: "PHC13", drug: "iv_ns_500", daysToExpiry: 48, overFactor: 2.6 },
   { facility: "DHH01", drug: "act_kit", daysToExpiry: 65, overFactor: 1.9 },
-  { facility: "CHC09", drug: "cotrimoxazole_480", daysToExpiry: 40, overFactor: 2.4 },
+  { facility: "CHC12", drug: "cotrimoxazole_480", daysToExpiry: 40, overFactor: 2.4 },
   { facility: "SDH01", drug: "ns1_dengue", daysToExpiry: 75, overFactor: 2.8 },
-  { facility: "CHC03", drug: "doxycycline_100", daysToExpiry: 52, overFactor: 2.3 },
+  { facility: "CHC06", drug: "doxycycline_100", daysToExpiry: 52, overFactor: 2.3 },
 ];
 
 // ---- Simulation ----------------------------------------------------------
@@ -144,16 +146,17 @@ function newBatch(qty, expiryIso) {
 // blind spots to surface - including ones inside blocks that are flagging
 // an outbreak, the most dangerous kind.
 const REPORTER_NAMES = [
-  "Sanjukta Behera", "Pradeep Nayak", "Laxmi Majhi", "Bibhuti Pradhan",
-  "Anita Sahu", "Rakesh Meher", "Sunita Bag", "Debasis Rout", "Kabita Naik",
-  "Manoj Patra", "Jyoti Mishra", "Santosh Dandsena", "Rina Harijan",
-  "Ashok Bhoi", "Purnima Sethi", "Gopal Karsan",
+  "Bhavesh Patel", "Kiran Damor", "Nita Baria", "Ramesh Bhabhor",
+  "Hansa Ninama", "Mahesh Katara", "Jyotsna Parmar", "Dinesh Macwan",
+  "Alpa Solanki", "Suresh Taviyad", "Rekha Damor", "Amit Bariya",
+  "Falguni Patel", "Naresh Muniya", "Manisha Rathva", "Vikram Khant",
 ];
 const REPORTER_ROLES = ["Pharmacist", "ANM", "Staff Nurse", "MPHW (M)", "Medical Officer"];
 
-// facility id -> days since last report (blind spots in alert-flagging blocks
-// Thuamul Rampur, Kesinga come first; the rest are routine negligence).
-const SILENT_SEEDS = { PHC13: 4, PHC05: 3, PHC22: 2, PHC16: 2 };
+// facility id -> days since last report. PHC20 (Chakaliya) is the dangerous
+// one: a blind spot inside the Jhalod block that is flagging an outbreak. The
+// rest are routine negligence elsewhere in the district.
+const SILENT_SEEDS = { PHC20: 3, PHC26: 4, PHC11: 2, PHC14: 2 };
 
 let facIndex = 0;
 const facilitiesOut = {};
@@ -302,7 +305,7 @@ for (const fac of district.facilities) {
   const lastReporter = {
     name: REPORTER_NAMES[facIndex % REPORTER_NAMES.length],
     role: REPORTER_ROLES[facIndex % REPORTER_ROLES.length],
-    staffId: `KLH-${fac.type}-${String(1042 + facIndex * 7).padStart(4, "0")}`,
+    staffId: `DHD-${fac.type}-${String(1042 + facIndex * 7).padStart(4, "0")}`,
     photo: null,
   };
   facIndex += 1;
@@ -329,18 +332,18 @@ fs.writeFileSync(path.join(__dirname, "records.json"), JSON.stringify(out));
 function last(arr, n) {
   return arr.slice(-n);
 }
-const chc05 = facilitiesOut.CHC05.series;
+const chc07 = facilitiesOut.CHC07.series;
 const mean = (a) => a.reduce((x, y) => x + y, 0) / a.length;
 console.log("Generated", days.length, "days ending", endDate, "for", Object.keys(facilitiesOut).length, "facilities");
 console.log(
-  "CHC Lanjigarh fever today:",
-  chc05.fever[DAYS - 1],
+  "CHC Mirakhedi fever today:",
+  chc07.fever[DAYS - 1],
   "| baseline mean (30d before outbreak):",
-  mean(chc05.fever.slice(OUTBREAK_START - 30, OUTBREAK_START)).toFixed(1)
+  mean(chc07.fever.slice(OUTBREAK_START - 30, OUTBREAK_START)).toFixed(1)
 );
 console.log(
-  "CHC Lanjigarh fever_rash last 9 days:",
-  last(chc05.fever_rash, 9).join(",")
+  "CHC Mirakhedi fever_rash last 9 days:",
+  last(chc07.fever_rash, 9).join(",")
 );
 let expSoon = 0;
 let expValue = 0;
