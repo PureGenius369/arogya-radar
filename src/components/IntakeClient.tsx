@@ -34,15 +34,11 @@ interface Draft {
 
 const EMPTY_DRAFT: Draft = { footfall: null, bedOccupied: null, syndromes: {}, stock: [], notes: "" };
 
-// Designed demo voice notes — each tied to a facility so submitting it moves
-// the dashboard in a visible way. "Load a sample voice note" picks one at random.
-const VOICE_SAMPLES: { file: string; facilityId: string }[] = [
-  { file: "/samples/voice-1.wav", facilityId: "PHC20" }, // Chakaliya, Jhalod: silent blind spot reports in
-  { file: "/samples/voice-2.wav", facilityId: "PHC17" }, // Bilwani, Jhalod: outbreak spike + stockout
-  { file: "/samples/voice-3.wav", facilityId: "PHC14" }, // Sarsava, Fatepura: diarrhoea cluster + blind spot
-  { file: "/samples/voice-4.wav", facilityId: "PHC21" }, // Dhavdiya, Jhalod: fever/rash block + blind spot
-  { file: "/samples/voice-5.wav", facilityId: "CHC10" }, // Sanjeli: snakebite + ASV shortage
-];
+// A designed demo voice note — a real Gujarati daily report from PHC Bilwani
+// (Jhalod, the outbreak block): high fever + fever-with-rash, malaria RDT
+// positives, dengue kits and ORS running out. Submitting it moves the dashboard
+// in a visible way.
+const VOICE_SAMPLE = { file: "/samples/voice-gujarati.wav", facilityId: "PHC17" };
 
 type Tab = "voice" | "photo" | "manual";
 type Step = "input" | "review" | "done";
@@ -172,11 +168,10 @@ export default function IntakeClient({
     }
   }
 
-  // Bundled demo assets so a visitor without a mic, register, or Hindi can
-  // still experience the real Gemini parse in two clicks. Each voice sample is
-  // a designed scenario tied to a facility that moves the dashboard: a silent
-  // blind spot reporting in, an outbreak spike, a diarrhoea cluster, a fever
-  // block, a snakebite/stock shortage. "Load a sample" picks one at random.
+  // Bundled demo assets so a visitor without a mic or register can still
+  // experience the real Gemini parse in two clicks. The voice note is a real
+  // Gujarati daily report tied to PHC Bilwani in the outbreak block, so
+  // submitting it visibly moves the dashboard.
   async function loadSample(kind: "audio" | "image") {
     setSampleLoading(true);
     setError(null);
@@ -184,9 +179,8 @@ export default function IntakeClient({
       let url: string;
       let facilityToSet: string | undefined;
       if (kind === "audio") {
-        const s = VOICE_SAMPLES[Math.floor(Math.random() * VOICE_SAMPLES.length)];
-        url = s.file;
-        facilityToSet = s.facilityId;
+        url = VOICE_SAMPLE.file;
+        facilityToSet = VOICE_SAMPLE.facilityId;
       } else {
         url = "/samples/register-sample.jpg";
         facilityToSet = "PHC10"; // the register image is Biswanathpur-specific
@@ -196,7 +190,7 @@ export default function IntakeClient({
       const blob = await res.blob();
       if (facilityToSet && facilities.some((f) => f.id === facilityToSet)) setFacilityId(facilityToSet);
       if (kind === "audio") {
-        const f = new File([blob], "voice-sample.wav", { type: "audio/wav" });
+        const f = new File([blob], "voice-gujarati.wav", { type: "audio/wav" });
         setAudioBlob(f);
         setAudioUrl((old) => {
           if (old) URL.revokeObjectURL(old);
@@ -519,7 +513,7 @@ export default function IntakeClient({
           <p className="sub" style={{ marginTop: 10 }}>
             No mic handy?{" "}
             <button className="btn sm secondary" onClick={() => loadSample("audio")} disabled={sampleLoading}>
-              {sampleLoading ? "Loading…" : "▶ Load a sample voice note"}
+              {sampleLoading ? "Loading…" : "▶ Load a Gujarati sample voice note"}
             </button>
           </p>
           <p className="sub">…or upload a voice note file:</p>
