@@ -49,6 +49,16 @@ export const DATA_FEEDS: DataFeed[] = [
     note: "Coarse and late on its own — used as the baseline, never the live signal.",
   },
   {
+    id: "imd",
+    name: "IMD district forecast",
+    operator: "India Meteorological Department",
+    provides: "Daily temperature, humidity and heat-index forecast",
+    feedsInto: "Heat-wave early warning",
+    entryFree: true,
+    status: "pilot-sim",
+    note: "Powers heat-illness alerts and readiness — a second life-saving use, no data entry.",
+  },
+  {
     id: "field",
     name: "Field reports — voice / photo / WhatsApp",
     operator: "Facility staff, last mile only",

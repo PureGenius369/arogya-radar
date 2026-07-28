@@ -1182,6 +1182,105 @@ textarea:focus {
   font-weight: 600;
 }
 
+/* ---- Heat-wave early warning --------------------------------------------- */
+.card-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.card-head-row h2 {
+  margin: 0;
+}
+.heat-headline {
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--ink);
+  margin: 4px 0 12px;
+}
+.heat-strip {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.heat-day {
+  flex: 1;
+  min-width: 62px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 6px;
+  text-align: center;
+}
+.heat-day.normal {
+  background: var(--ok-bg);
+}
+.heat-day.caution {
+  background: var(--watch-bg);
+}
+.heat-day.warning {
+  background: var(--warn-bg);
+}
+.heat-day.danger {
+  background: var(--danger-bg);
+}
+.hd-day {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-2);
+  text-transform: uppercase;
+}
+.hd-temp {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+.hd-hi {
+  font-size: 10.5px;
+  color: var(--ink-3);
+}
+.heat-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 700px) {
+  .heat-cols {
+    grid-template-columns: 1fr;
+  }
+}
+.heat-subhead {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ink-3);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.heat-ready {
+  font-size: 13px;
+  padding: 4px 0;
+}
+.heat-ready.ok {
+  color: var(--ok);
+}
+.heat-ready.warn {
+  color: var(--warn);
+  font-weight: 600;
+}
+.heat-actions {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.heat-actions li {
+  margin-bottom: 5px;
+}
+
 /* Register template print styles */
 .register-sheet {
   background: #fff;

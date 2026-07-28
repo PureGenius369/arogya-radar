@@ -26,6 +26,12 @@ const REASON_CLASS: Record<string, string> = {
   "expiry-prevention": "surplus",
   "outbreak-preposition": "alert",
 };
+const HEAT_BADGE: Record<string, string> = {
+  danger: "alert",
+  warning: "warning",
+  caution: "watch",
+  normal: "ok",
+};
 
 export default async function CommandCentre({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -336,6 +342,50 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
           ))}
         </div>
       )}
+
+      <div className="card">
+        <div className="card-head-row">
+          <h2>Heat-wave early warning</h2>
+          <span className={`badge ${HEAT_BADGE[dash.heat.level]}`}>{dash.heat.level}</span>
+        </div>
+        <p className="sub">
+          A second life-saving use of the same radar — the IMD heat-index forecast, facility
+          readiness, and the Heat Action Plan steps. Gujarat pioneered India&apos;s Heat Action Plans.
+        </p>
+        <p className="heat-headline">{dash.heat.headline}</p>
+        <div className="heat-strip">
+          {dash.heat.days.map((d) => (
+            <div key={d.date} className={`heat-day ${d.level}`}>
+              <div className="hd-day">{d.label}</div>
+              <div className="hd-temp">{d.tempMax}°</div>
+              <div className="hd-hi">feels {d.heatIndex}°</div>
+            </div>
+          ))}
+        </div>
+        <div className="heat-cols">
+          <div>
+            <div className="heat-subhead">Readiness — rehydration stock</div>
+            {dash.heat.readiness.map((r) => (
+              <div key={r.drugName} className={`heat-ready ${r.facilitiesShort > 0 ? "warn" : "ok"}`}>
+                {r.facilitiesShort > 0
+                  ? `${r.drugName}: ${r.facilitiesShort} of ${r.totalStocking} centres low/out`
+                  : `${r.drugName}: all ${r.totalStocking} centres stocked`}
+              </div>
+            ))}
+          </div>
+          <div>
+            <div className="heat-subhead">Recommended actions</div>
+            <ul className="heat-actions">
+              {dash.heat.actions.map((a, i) => (
+                <li key={i}>{a}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <p className="sub" style={{ marginTop: 10, marginBottom: 0 }}>
+          {dash.heat.note}
+        </p>
+      </div>
 
       <div className="card">
         <h2>
