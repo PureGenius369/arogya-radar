@@ -286,6 +286,57 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
         </div>
       )}
 
+      {dash.forecasts.length > 0 && (
+        <div className="card">
+          <h2>Forecast &amp; pre-positioning — where this is heading</h2>
+          <p className="sub">
+            If the current 7-day trend holds, the radar projects the next two weeks and the
+            medicines to pre-position now (14 days of cover). A planning aid that assumes the trend
+            continues — <strong>not a certainty</strong>.
+          </p>
+          {dash.forecasts.slice(0, 3).map((f) => (
+            <div key={f.alertId} className="forecast-item">
+              <div className="head">
+                <span className="title">
+                  {f.block} block — {f.label}
+                </span>
+                <span className="badge warning">+{f.weeklyGrowthPct}% / week</span>
+              </div>
+              <div className="forecast-traj">
+                <div className="ft-step">
+                  <div className="ft-n">{f.todayPerDay}</div>
+                  <div className="ft-l">cases/day now</div>
+                </div>
+                <span className="ft-arrow">→</span>
+                <div className="ft-step">
+                  <div className="ft-n">~{f.projected7}</div>
+                  <div className="ft-l">in 7 days</div>
+                </div>
+                <span className="ft-arrow">→</span>
+                <div className="ft-step danger">
+                  <div className="ft-n">~{f.projected14}</div>
+                  <div className="ft-l">in 14 days</div>
+                </div>
+                <div className="ft-cum">
+                  <div className="ft-n accent">~{f.cumulative14.toLocaleString("en-IN")}</div>
+                  <div className="ft-l">cases over 14 days</div>
+                </div>
+              </div>
+              {f.drugAsk.length > 0 && (
+                <div className="forecast-ask">
+                  <span className="fa-label">Pre-position now:</span>
+                  {f.drugAsk.map((d) => (
+                    <span key={d.drugId} className="fa-drug">
+                      {d.qty.toLocaleString("en-IN")} {d.unit} · {d.drugName}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="card">
         <h2>
           Reporting compliance —{" "}

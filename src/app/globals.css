@@ -1102,6 +1102,86 @@ textarea:focus {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- Outbreak forecast --------------------------------------------------- */
+.forecast-item {
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--warn);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.forecast-item .head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.forecast-item .title {
+  font-weight: 650;
+  font-size: 14px;
+}
+.forecast-traj {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ft-step,
+.ft-cum {
+  text-align: center;
+}
+.ft-cum {
+  margin-left: auto;
+  padding-left: 14px;
+  border-left: 1px dashed var(--line);
+}
+.ft-n {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.ft-step.danger .ft-n {
+  color: var(--danger);
+}
+.ft-n.accent {
+  color: var(--accent-ink);
+}
+.ft-l {
+  font-size: 11px;
+  color: var(--ink-3);
+}
+.ft-arrow {
+  color: var(--ink-3);
+  font-size: 16px;
+}
+.forecast-ask {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+.fa-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ink-3);
+  font-weight: 700;
+}
+.fa-drug {
+  font-size: 12.5px;
+  background: #e8f4f8;
+  color: var(--accent-ink);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
 /* Register template print styles */
 .register-sheet {
   background: #fff;

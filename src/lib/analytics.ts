@@ -4,6 +4,7 @@ import type { ActionRecord, AlertSeverity, BlockAlert, ComplianceRow, ExpiryRow,
 import type { Store } from "./store";
 import { detectAlerts, facilityAlertLevels } from "./radar";
 import { detectConsumptionAlerts, type ConsumptionAlert } from "./consumption";
+import { forecastOutbreaks, type Forecast } from "./forecast";
 import { expiryRows, stockRows, transferRecs } from "./stock";
 import { complianceRows, complianceSummary } from "./compliance";
 
@@ -42,6 +43,7 @@ export interface Dashboard {
   };
   alerts: BlockAlert[];
   consumptionAlerts: ConsumptionAlert[];
+  forecasts: Forecast[];
   facilities: FacilityStatus[];
   shortages: StockRow[];
   expiry: ExpiryRow[];
@@ -61,6 +63,7 @@ export function buildDashboard(store: Store): Dashboard {
 
   const alerts = detectAlerts(store);
   const consumptionAlerts = detectConsumptionAlerts(store);
+  const forecasts = forecastOutbreaks(store, alerts);
   const levels = facilityAlertLevels(alerts);
   const rows = stockRows(store);
   const expiry = expiryRows(store, 120);
@@ -125,6 +128,7 @@ export function buildDashboard(store: Store): Dashboard {
     },
     alerts,
     consumptionAlerts,
+    forecasts,
     facilities,
     shortages: shortages.slice(0, 15),
     expiry: expiry.slice(0, 10),

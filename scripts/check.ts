@@ -32,6 +32,15 @@ for (const a of dash.consumptionAlerts) {
   }
 }
 
+console.log("\n=== Outbreak forecast (if the trend holds) ===");
+for (const f of dash.forecasts) {
+  console.log(
+    `${f.block} — ${f.label}: ${f.todayPerDay}/day now -> ~${f.projected7}/day in 7d -> ~${f.projected14}/day in 14d ` +
+      `(+${f.weeklyGrowthPct}%/wk). ~${f.cumulative14} cases over 14 days.`
+  );
+  for (const d of f.drugAsk) console.log(`   pre-position: ${d.qty} ${d.unit} ${d.drugName}`);
+}
+
 console.log("\n=== Worst shortages (top 10) ===");
 for (const s of dash.shortages.slice(0, 10)) {
   console.log(
