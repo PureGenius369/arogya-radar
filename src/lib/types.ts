@@ -209,6 +209,26 @@ export interface IntakeReport {
   reporter?: Reporter | null;
 }
 
+// ---- Response / action tracking (closed loop) -----------------------------
+
+export type ActionStatus = "open" | "acknowledged" | "dispatched" | "resolved";
+
+export const ACTION_FLOW: ActionStatus[] = ["open", "acknowledged", "dispatched", "resolved"];
+
+export const ACTION_LABEL: Record<ActionStatus, string> = {
+  open: "Open",
+  acknowledged: "Acknowledged",
+  dispatched: "Team dispatched",
+  resolved: "Resolved",
+};
+
+export interface ActionRecord {
+  status: ActionStatus;
+  updatedAt: string; // ISO timestamp
+  by?: string | null;
+  note?: string | null;
+}
+
 // ---- Reporting compliance -------------------------------------------------
 
 export type ComplianceSeverity = "ok" | "overdue" | "blindspot";

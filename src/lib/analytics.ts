@@ -1,6 +1,6 @@
 // Assembles the full district dashboard payload from the store.
 
-import type { AlertSeverity, BlockAlert, ComplianceRow, ExpiryRow, Reporter, StockRow, TransferRec } from "./types";
+import type { ActionRecord, AlertSeverity, BlockAlert, ComplianceRow, ExpiryRow, Reporter, StockRow, TransferRec } from "./types";
 import type { Store } from "./store";
 import { detectAlerts, facilityAlertLevels } from "./radar";
 import { detectConsumptionAlerts, type ConsumptionAlert } from "./consumption";
@@ -48,6 +48,8 @@ export interface Dashboard {
   expiryTotal: number;
   transfers: TransferRec[];
   compliance: ComplianceRow[];
+  actions: Record<string, ActionRecord>;
+  responseSummary: { total: number; open: number; inProgress: number; resolved: number };
   intakeLog: { at: string; facilityId: string; summary: string; reporter?: Reporter | null }[];
 }
 
@@ -98,6 +100,15 @@ export function buildDashboard(store: Store): Dashboard {
     .sort((a, b) => a.daysOfStock - b.daysOfStock);
   const expiryTotal = expiry.reduce((a, e) => a + e.wasteValue, 0);
 
+  // Response loop: how many of the outbreak alerts have been acted on.
+  let open = 0, inProgress = 0, resolved = 0;
+  for (const a of alerts) {
+    const st = store.actions[a.id]?.status;
+    if (st === "resolved") resolved++;
+    else if (st === "acknowledged" || st === "dispatched") inProgress++;
+    else open++;
+  }
+
   return {
     district: district.district,
     state: district.state,
@@ -120,6 +131,8 @@ export function buildDashboard(store: Store): Dashboard {
     expiryTotal,
     transfers,
     compliance,
+    actions: store.actions,
+    responseSummary: { total: alerts.length, open, inProgress, resolved },
     intakeLog: store.intakeLog.slice(0, 5),
   };
 }

@@ -1004,6 +1004,104 @@ textarea:focus {
   }
 }
 
+/* ---- Response / action tracking (closed loop) ---------------------------- */
+.response-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.rs-title {
+  color: var(--ink-3);
+  font-weight: 600;
+}
+.rs-item {
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+}
+.rs-item.open {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+.rs-item.prog {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+.rs-item.done {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+.action-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ink-3);
+  font-weight: 700;
+}
+.action-steps {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.action-pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink-2);
+  cursor: pointer;
+  font-family: inherit;
+}
+.action-pill:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.action-pill:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.action-pill.done {
+  color: var(--ink-3);
+  background: #f4f7f9;
+}
+.action-pill.active {
+  color: #fff;
+  border-color: transparent;
+}
+.action-pill.open.active {
+  background: var(--ink-3);
+}
+.action-pill.acknowledged.active {
+  background: var(--warn);
+}
+.action-pill.dispatched.active {
+  background: var(--accent);
+}
+.action-pill.resolved.active {
+  background: var(--ok);
+}
+.action-time {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
 /* Register template print styles */
 .register-sheet {
   background: #fff;

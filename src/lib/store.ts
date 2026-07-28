@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { DistrictFile, Drug, Facility, IntakeReport, Reporter, RecordsFile, StateFile, Syndrome } from "./types";
+import type { ActionRecord, ActionStatus, DistrictFile, Drug, Facility, IntakeReport, Reporter, RecordsFile, StateFile, Syndrome } from "./types";
 import { SYNDROMES } from "./types";
 
 export interface Store {
@@ -9,6 +9,7 @@ export interface Store {
   drugs: Drug[];
   records: RecordsFile;
   intakeLog: { at: string; facilityId: string; summary: string; reporter?: Reporter | null }[];
+  actions: Record<string, ActionRecord>; // keyed by alert id — the response loop
 }
 
 // Survives Next.js dev-server HMR reloads and is shared across route handlers.
@@ -20,7 +21,16 @@ function load(): Store {
   const district = JSON.parse(fs.readFileSync(path.join(dataDir, "district.json"), "utf8")) as DistrictFile;
   const drugs = (JSON.parse(fs.readFileSync(path.join(dataDir, "drugs.json"), "utf8")) as { drugs: Drug[] }).drugs;
   const records = JSON.parse(fs.readFileSync(path.join(dataDir, "records.json"), "utf8")) as RecordsFile;
-  return { state, district, drugs, records, intakeLog: [] };
+  return { state, district, drugs, records, intakeLog: [], actions: {} };
+}
+
+/** Records an officer's action on an alert (the closed response loop). */
+export function setAction(id: string, status: ActionStatus, by?: string | null, note?: string | null): ActionRecord {
+  const store = getStore();
+  const rec: ActionRecord = { status, updatedAt: new Date().toISOString(), by: by ?? null, note: note ?? null };
+  if (status === "open") delete store.actions[id];
+  else store.actions[id] = rec;
+  return rec;
 }
 
 export function getStore(): Store {

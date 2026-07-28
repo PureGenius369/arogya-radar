@@ -8,6 +8,7 @@ import Sparkline from "@/components/Sparkline";
 import DemoTour from "@/components/DemoTour";
 import DataSources from "@/components/DataSources";
 import Backtest from "@/components/Backtest";
+import AlertAction from "@/components/AlertAction";
 
 export const dynamic = "force-dynamic";
 
@@ -207,6 +208,14 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
             EARS-C2 aberration detection over daily syndrome counts, block-level corroboration —
             the same statistics family used by CDC/WHO surveillance, running on facility reports.
           </p>
+          {dash.responseSummary.total > 0 && (
+            <div className="response-summary">
+              <span className="rs-title">Response tracker:</span>
+              <span className="rs-item open">{dash.responseSummary.open} open</span>
+              <span className="rs-item prog">{dash.responseSummary.inProgress} in progress</span>
+              <span className="rs-item done">{dash.responseSummary.resolved} resolved</span>
+            </div>
+          )}
           {dash.alerts.length === 0 && <p>No abnormal syndrome activity detected.</p>}
           {dash.alerts.map((a) => (
             <div key={a.id} className={`alert-item ${a.severity}`}>
@@ -226,6 +235,11 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
                   </span>
                 </div>
               ))}
+              <AlertAction
+                id={a.id}
+                status={dash.actions[a.id]?.status ?? "open"}
+                updatedAt={dash.actions[a.id]?.updatedAt}
+              />
             </div>
           ))}
         </div>
