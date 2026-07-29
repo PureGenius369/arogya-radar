@@ -79,6 +79,7 @@ export default function StateRadar() {
             center={state.center}
             districts={state.districts}
             liveStats={{ alerts: dash.kpis.activeAlerts, expiryValue: dash.kpis.expiryWasteValue }}
+            mapsApiKey={process.env.GOOGLE_MAPS_API_KEY}
           />
         </div>
 

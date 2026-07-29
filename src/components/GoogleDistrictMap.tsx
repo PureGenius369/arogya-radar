@@ -12,6 +12,7 @@ import {
   facilityPopupHtml,
   MapLegend,
 } from "./DistrictMap";
+import LeafletDistrictMap from "./LeafletDistrictMap";
 
 function pinScale(type: string): number {
   if (type === "DHH") return 9;
@@ -39,6 +40,9 @@ export default function GoogleDistrictMap({
   const routeRef = useRef<google.maps.DirectionsRenderer | google.maps.Polyline | null>(null);
   const facById = useRef(new Map<string, FacilityStatus>());
   const [ready, setReady] = useState(false);
+  // Fall back to OpenStreetMap/Leaflet if Google Maps can't render (billing off,
+  // Maps JavaScript API not enabled, or key restricted) so the map is never blank.
+  const [failed, setFailed] = useState(false);
   const [heatOn, setHeatOn] = useState(false);
   const [routeIdx, setRouteIdx] = useState(-1);
   const [routeInfo, setRouteInfo] = useState("");
@@ -46,6 +50,9 @@ export default function GoogleDistrictMap({
   // Build the map once.
   useEffect(() => {
     let cancelled = false;
+    const w = window as unknown as { gm_authFailure?: () => void };
+    w.gm_authFailure = () => setFailed(true);
+    const timer = setTimeout(() => setFailed(true), 6000); // no tiles by now → fall back
     setOptions({ key: apiKey, v: "weekly" });
 
     Promise.all([importLibrary("maps"), importLibrary("marker")])
@@ -62,6 +69,7 @@ export default function GoogleDistrictMap({
           clickableIcons: false,
         });
         mapRef.current = map;
+        map.addListener("tilesloaded", () => clearTimeout(timer));
         for (const f of facilities) facById.current.set(f.id, f);
 
         const bounds = new g.LatLngBounds();
@@ -109,10 +117,14 @@ export default function GoogleDistrictMap({
         map.fitBounds(bounds, 40);
         setReady(true);
       })
-      .catch((e: unknown) => console.error("Google Maps failed to load:", e));
+      .catch((e: unknown) => {
+        console.error("Google Maps failed to load:", e);
+        setFailed(true);
+      });
 
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -219,6 +231,12 @@ export default function GoogleDistrictMap({
       cancelled = true;
     };
   }, [routeIdx, ready, transfers]);
+
+  if (failed) {
+    return (
+      <LeafletDistrictMap center={center} facilities={facilities} zones={zones} transfers={transfers} />
+    );
+  }
 
   return (
     <div>
