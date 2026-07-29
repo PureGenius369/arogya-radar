@@ -5,10 +5,28 @@ import Logo from "@/components/Logo";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
+const DESCRIPTION =
+  "AI-powered early warning for disease outbreaks, heat waves and medicine shortages across Gujarat's PHCs and CHCs. Live pilot: Dahod, covering all 33 districts.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://arogya-radar-117722238113.asia-south1.run.app"),
   title: "Arogya Radar — Gujarat State Health Radar",
-  description:
-    "AI-powered intake, outbreak early-warning and medicine redistribution for PHCs and CHCs across Gujarat. Live pilot: Dahod district.",
+  description: DESCRIPTION,
+  openGraph: {
+    title: "Arogya Radar — Gujarat State Health Radar",
+    description: DESCRIPTION,
+    url: "/",
+    siteName: "Arogya Radar",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Arogya Radar — Gujarat state health radar" }],
+    locale: "en_IN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Arogya Radar — Gujarat State Health Radar",
+    description: DESCRIPTION,
+    images: ["/og.png"],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
