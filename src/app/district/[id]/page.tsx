@@ -466,7 +466,7 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
             </tr>
           </thead>
           <tbody>
-            {dash.transfers.map((t, i) => (
+            {dash.transfers.slice(0, 12).map((t, i) => (
               <tr key={i}>
                 <td>{t.drugName}</td>
                 <td className="num">
@@ -483,6 +483,12 @@ export default async function CommandCentre({ params }: { params: Promise<{ id: 
             ))}
           </tbody>
         </table>
+        {dash.transfers.length > 12 && (
+          <p className="sub" style={{ marginTop: 8, marginBottom: 0 }}>
+            + {dash.transfers.length - 12} more transfers, mostly stockout relief consolidating to the
+            district hospital.
+          </p>
+        )}
       </div>
 
       <div className="card">

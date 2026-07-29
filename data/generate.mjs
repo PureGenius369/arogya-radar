@@ -53,9 +53,10 @@ const district = JSON.parse(fs.readFileSync(path.join(__dirname, "district.json"
 const drugCatalog = JSON.parse(fs.readFileSync(path.join(__dirname, "drugs.json"), "utf8")).drugs;
 
 // Pinned "today" so the demo is deterministic and stable across every
-// regenerate/redeploy (the Dockerfile regenerates at build time). Without
-// this, new Date() shifts the 90-day window each day and the numbers drift.
-const end = new Date("2026-07-08T12:00:00Z");
+// regenerate/redeploy (the Dockerfile regenerates at build time), which keeps
+// the headline numbers consistent with the pitch PDF. Bump this to a recent
+// date before a big send so the site reads as current; or set GENERATE_END.
+const end = new Date((process.env.GENERATE_END || "2026-07-29") + "T12:00:00Z");
 const days = [];
 for (let i = DAYS - 1; i >= 0; i--) {
   days.push(new Date(end.getTime() - i * 86400000).toISOString().slice(0, 10));
