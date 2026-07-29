@@ -52,11 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="shell">{children}</main>
         <footer className="site-footer">
           <div className="shell footer-inner">
-            <span>
-              Prototype for <strong>Build with AI: Code for Communities</strong> — Track 3 Smart
-              Health. Facility activity is synthetic, calibrated on HMIS/IDSP public data; see
-              README for data provenance.
-            </span>
+            <span>Arogya Radar · Gujarat state health radar</span>
             <ResetButton className="btn sm secondary no-print" />
           </div>
         </footer>
